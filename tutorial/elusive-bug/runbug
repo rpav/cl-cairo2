@@ -1,0 +1,2 @@
+#!/bin/sh
+LD_PRELOAD=/home/tpapp/software/cairo-trace/cairo-trace.so sbcl --eval '(progn (load "bug.lisp") (quit))'

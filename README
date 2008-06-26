@@ -1,0 +1,7 @@
+Please read the tutorial to get started.  To compile the tutorial from
+source, you will need a reasonably complete LaTeX installation with
+dvipdfm.
+
+The project webpage is at http://common-lisp.net/project/cl-cairo2,
+where you will find the repository, mailing lists, contact information
+etc.

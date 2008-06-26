@@ -1,0 +1,18 @@
+K 10
+svn:ignore
+V 151
+tutorial.log
+text.epsi
+tutorial.dvi
+example.epsi
+lissajous.ps
+tutorial.aux
+text.ps
+auto
+hearts.png
+tutorial.out
+lissajous.epsi
+tutorial.pdf
+example.ps
+
+END
