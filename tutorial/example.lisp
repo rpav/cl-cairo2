@@ -11,7 +11,7 @@
 ;;;;  short example for the tutorial
 ;;;;
 
-(defparameter *surface* (create-ps-surface "example.ps" 200 100))
+(defparameter *surface* (create-pdf-surface "example.pdf" 200 100))
 (setf *context* (create-context *surface*))
 (destroy *surface*)
 ;; clear the whole canvas with blue
@@ -41,7 +41,7 @@
       (show-text text))))
 
 ;;;; very simple text example
-(setf *context* (create-ps-context "simpletext.ps" 100 100))
+(setf *context* (create-pdf-context "simpletext.pdf" 100 100))
 (move-to 0 100)
 (set-font-size 50)
 (show-text "foo")
@@ -73,7 +73,7 @@
 (defparameter size 50)
 (defparameter x 20d0)
 (defparameter y 50d0)
-(setf *context* (create-ps-context "text.ps" width height))
+(setf *context* (create-pdf-context "text.pdf" width height))
 ;;(setf *context* (create-svg-context "text.svg" width height))
 ;;(setf *context* (create-pdf-context "text.pdf" width height))
 ;; white background
@@ -138,7 +138,7 @@
 (defparameter size 50)
 (defparameter x 20)
 (defparameter y 50)
-(setf *context* (create-ps-context "text2.ps" width height))
+(setf *context* (create-pdf-context "text2.pdf" width height))
 ;;(setf *context* (create-svg-context "text.svg" width height))
 ;;(setf *context* (create-pdf-context "text.pdf" width height))
 ;; white background
@@ -186,7 +186,7 @@
 (defparameter b 8)
 (defparameter delta (/ pi 2))
 (defparameter density 2000)
-(setf *context* (create-ps-context "lissajous.ps" size size))
+(setf *context* (create-pdf-context "lissajous.pdf" size size))
 ;; pastel blue background
 (rectangle 0 0 width height)
 (set-source-rgb 0.9 0.9 1)
@@ -255,7 +255,7 @@
 
 (defparameter width 100)
 (defparameter height 40)
-(setf *context* (create-ps-context "pattern.ps" width height))
+(setf *context* (create-pdf-context "pattern.pdf" width height))
 (with-linear-pattern rainbow (0 0 width 0)
     `((0   (0.7 0 0.7 0))      ;rgb(a) color as list
       (1/6 ,cl-colors:+blue+)  ;color as cl-color
