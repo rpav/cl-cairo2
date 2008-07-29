@@ -7,10 +7,6 @@
 ;;;;    cairo-get-target
 ;;;;    push-group-with-content
 ;;;;    get-group-target
-;;;;    set-source
-;;;;    set-source-surface
-;;;;    get-source
-;;;;    mask
 ;;;;    mask-surface
 ;;;;
 ;;;;
@@ -98,17 +94,16 @@ nonlocal exits."
 
 (defvar *context* nil "default cairo context")
 
-(defmacro with-png-file ((filename format width height) &body body)
+(defmacro with-png-file ((filename format width height &optional (surface-name (gensym))) &body body)
   "Execute the body with context bound to a newly created png
    file, and close it after executing body."
-  (let ((surface-name (gensym)))
-    `(let* ((,surface-name (create-image-surface ,format ,width ,height))
-	    (*context* (create-context ,surface-name)))
-       (progn
-	 ,@body
-	 (surface-write-to-png ,surface-name ,filename)
-	 (destroy ,surface-name)
-	 (destroy *context*)))))
+  `(let* ((,surface-name (create-image-surface ,format ,width ,height))
+		  (*context* (create-context ,surface-name)))
+	 (unwind-protect (progn ,@body)
+	   (progn
+		 (surface-write-to-png ,surface-name ,filename)
+		 (destroy *context*)
+		 (destroy ,surface-name)))))
 
 (defmacro with-context ((context pointer) &body body)
   "Execute body with pointer pointing to context, and check status."
@@ -199,6 +194,11 @@ nonlocal exits."
 (define-with-default-context-sync paint-with-alpha alpha)
 (define-with-default-context-sync stroke)
 (define-with-default-context-sync stroke-preserve)
+
+(defun set-source-surface (image x y &optional (context *context*))
+  (with-alive-object (image i-pointer)
+	(with-context (context c-pointer)
+	  (cairo_set_source_surface c-pointer i-pointer x y))))
 
 ;;;; get-target
 

@@ -1,0 +1,28 @@
+Tested Environments
+===================
+
+Windows XP+SP3/Vista+SP1: SBCL-1.0.13, cairo-1.6.4, libpng-1.2.29, zlib-1.2.3
+
+Notes About SWIG Used to Generate cl-cairo2-swig-win.lisp
+=========================================================
+
+Cairo version: 1.6.4
+Swig version:  1.3.33
+Swig command:  swig -cffi -Ipath-to-Windows-headers cl-cairo2-win.i
+
+Used slightly modified cairo-feature.h (undef CAIRO_HAS_FT_FONT, etc.)
+
+
+Notes About Libcairo for Windows and Mac
+========================================
+
+libcairo-2.dll for Windows
+Build from the 1.6.4 release snapshot using MinGW
+
+libcairo.dylib for Mac
+Build from the 1.6.4 release snapshot with the following option enabled at
+./configure time:
+  --enable-quartz-image
+
+The latest MacPorts build of libcairo (1.6.4 at this time) has an issue with
+cl-cairo2 (e.g. cairo_show_text returns STATUS_NO_MEMORY).

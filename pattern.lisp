@@ -15,14 +15,20 @@
   `(defun ,(prepend-intern "create-" type :suffix "-pattern") ,args
      (let ((pattern (make-instance 'pattern)))
        (with-checked-status pattern
-	 (setf (slot-value pattern 'pointer) (,(prepend-intern "cairo_pattern_create_" type :replace-dash nil) ,@args))
-	 (tg:finalize pattern #'(lambda () (lowlevel-destroy pattern)))))))
+		 (setf (slot-value pattern 'pointer) (,(prepend-intern "cairo_pattern_create_" type :replace-dash nil) ,@args))
+		 (tg:finalize pattern #'(lambda () (lowlevel-destroy pattern)))))))
 
 (define-create-pattern :rgb red green blue)
 (define-create-pattern :rgba red green blue alpha)
 (define-create-pattern :linear start-x start-y end-x end-y)
 (define-create-pattern :radial center0-x center0-y radius0 center1-x center1-y radius1)
 
+(defun create-pattern-for-surface (image)
+  (with-alive-object (image i-pointer)
+	(let ((pattern (make-instance 'pattern)))
+	  (with-checked-status pattern
+		(setf (slot-value pattern 'pointer) (cairo_pattern_create_for_surface i-pointer))
+		(tg:finalize pattern #'(lambda () (lowlevel-destroy pattern)))))))
 
 (defmacro define-pattern-function-flexible (name (pattern-name pointer-name &rest args) &body body)
   "make a defun of the appropriate name with a wrapped body and the pattern's pointer bound to ,pointer-name"
@@ -77,6 +83,7 @@
 ;; the following functions are missing:
 ;get-rgba
 ;get-surface
+;get-source
 ;get-color-stop-rgba
 ;get-color-stop-count
 ;get-linear-points
@@ -88,6 +95,10 @@
     (with-checked-status pattern
       (cairo_set_source context-pointer pattern-pointer))))
 
+(define-flexible (mask context-pointer pattern)
+  (with-alive-object (pattern pattern-pointer)
+	(with-checked-status pattern
+	  (cairo_mask context-pointer pattern-pointer))))
 
 ;;;;
 ;;;; convenience methods and macros for use with cl-colors:
@@ -134,9 +145,6 @@
 	   (otherwise (error "invalid color given: list is not of length 3 or 4")))
 	 pattern offset color))
 
-
-
-
 (defmacro make-with-pattern (type &rest args)
   "makes a macro that creates and binds a <type> pattern to pattern-name, adds color stops to the pattern
    (calling each element of color-stops with pattern-add-color-stop) before evaluating a body and destroying
@@ -153,3 +161,24 @@
 
 (make-with-pattern :radial center0-x center0-y radius0 center1-x center1-y radius1)
 (make-with-pattern :linear start-x start-y end-x end-y)
+
+(defun pattern-forms-p (pflist)
+  "pattern-forms := (pattern-form+)
+   pattern-form  := (pattern-name (create-xxxx-pattern args))"
+  (if (consp pflist)
+	  (dolist (pf pflist t)
+		(if (and (consp pf) (eql (length pf) 2))
+			(if (and (atom (car pf)) (consp (cadr pf)))
+				t
+				(error "invalid create-xxx-pattern form:~A" pf))
+			(error "invalid pattern-form:~A" pf)))
+	  (error "invalid pattern-forms:~A" pflist)))
+
+(defmacro with-patterns (pattern-forms &body body)
+  "create patterns from pattern-forms, each has its name as specified in the corresponding pattern-form,
+and then execute body in which the patterns can be referenced using the names."
+  (when (pattern-forms-p pattern-forms)
+	  `(let ,(loop for f in pattern-forms collect `(,(car f) ,(cadr f)))
+		 (unwind-protect (progn ,@body)
+		   (progn
+			 ,@(loop for f in pattern-forms collect `(destroy ,(car f))))))))

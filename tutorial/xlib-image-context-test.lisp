@@ -1,6 +1,6 @@
 (in-package :cl-cairo2)
 
-(setf *context* (create-xlib-image-context 400 200 :display-name ":0"))
+(setf *context* (cairo-x11:create-xlib-image-context 400 200 :display-name ":0"))
 (move-to 0 0)
 (line-to 400 200)
 (set-source-color +green+)

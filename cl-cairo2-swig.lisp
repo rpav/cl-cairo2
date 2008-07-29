@@ -1281,17 +1281,6 @@
 (cffi:defcfun ("cairo_ps_surface_dsc_begin_page_setup" cairo_ps_surface_dsc_begin_page_setup) :void
   (surface :pointer))
 
-(cffi:defcfun ("cairo_xlib_surface_create_with_xrender_format" cairo_xlib_surface_create_with_xrender_format) :pointer
-  (dpy :pointer)
-  (drawable :pointer)
-  (screen :pointer)
-  (format :pointer)
-  (width :int)
-  (height :int))
-
-(cffi:defcfun ("cairo_xlib_surface_get_xrender_format" cairo_xlib_surface_get_xrender_format) :pointer
-  (surface :pointer))
-
 (cffi:defcfun ("cairo_pdf_surface_create" cairo_pdf_surface_create) :pointer
   (filename :string)
   (width_in_points my-double)

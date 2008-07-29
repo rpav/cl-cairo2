@@ -236,7 +236,8 @@ written to PNG files) are supported.
 
 Drawing in X11 windows is implemented using the
 \lstinline!x11-context! class --- see Section~\ref{sec:xlib-context}
-for more information.
+for more information.  You need to load the \lstinline!cl-cairo2-x11!
+package for that.
 
 \subsection{Contexts}
 \label{sec:contexts}
@@ -345,44 +346,61 @@ been renamed to avoid conflicts with linear algebra packages.
 The xlib context is not part of cairo -- it is a bit of glue code that
 uses cairo's X11 surface on a pixmap, and displays this pixmap when
 needed (when X11 asks for the window contents to be redrawn or when
-cairo draws on the pixmap).
+cairo draws on the pixmap).  The X11 specific code is in a separate
+package, so make sure that you load \lstinline!cl-cairo2-x11!.
+
+Please remember that the X11 code provided is a proof of concept, only
+for displaying the results of Cairo commands interactively in windows.
+If you would like to use Cairo in your --- possibly more complex ---
+applications, you need to do things differently (for example, you need
+you own event loop).
+
+Two contexts are implemented, one uses double-buffered pixmaps, and
+can be created by \lstinline!create-xlib-context!, the other Xlib
+image surfaces, and you can create such a context by
+\lstinline!create-xlib-image-context!.  I suggest that you use the
+latter.
 
 In cl-cairo2, each window maps to a context.  The surface is not
 exposed to the user, who is only allowed to see the context.  This
 makes memory management and proper cleanup easier.  For example, you
-can create an \lstinline!xlib-context! with
+can create an \lstinline!xlib-image-context! with
 \begin{lstlisting}
-(setf *context* (create-xlib-context 500 400
+(setf *context* (create-xlib-image-context 500 400
                                          :display-name "localhost:0"
                                          :window-name "my pretty drawing"))
 \end{lstlisting}
 If you give \lstinline!nil! for \lstinline!display-name!, Xlib fill
 probably figure out a reasonable default, usually from your
-\verb!$DISPLAY! environment variable.
+\verb!$DISPLAY! environment variable.  You can also specify the
+background color.
 
 The X11 event loop runs in a separate thread, so you need a Lisp
 implementation that supports threads.  
 
 When the context \lstinline!destroy!ed, the window is closed.  This
 works the other way too: when the window is closed, the context is
-destroyed.  The windows are double-buffered using a pixmap on the X11
-server, therefore redrawing exposed windows is fast.  However, this
-implementation precludes the resizing of the window.
+destroyed.  The implementation precludes the resizing of the window.
 
-Example code can be found in \verb!tutorial/x11-example.lisp!.  The
-current implementation is not optimized for speed (the whole window is
-redrawn all the time) but it is fast enough.  If you draw a lot of
-objects at the same time, it is suggested that you suspend
-synchronizing with the X-window server using
- \lstinline!(sync-lock context)!.
-  When you are done, you can call \lstinline!(sync-unlock context)!, which will automatically sync the buffer and the window.
+The current implementation is not optimized for speed (the whole
+window is redrawn all the time) but it is fast enough.  If you draw a
+lot of objects at the same time, it is suggested that you suspend
+synchronizing with the X-window server using 
+\lstinline!(sync-lock context)!.  When you are done, you can call
+\lstinline!(sync-unlock context)!, which will automatically sync the
+buffer and the window.
 You can nest calls to \lstinline!sync-lock!  and
 \lstinline!sync-unlock!, and if you want to restore syncing
 unconditionally, use \lstinline!sync-reset!, which also performs
 syncing too.  These are generic functions which do nothing for other
 contexts.
 
+\subsection{MS-Windows contexts}
+\label{sec:ms-windows-contexts}
 
+Kei Suzuki contributed code for interfacing Cairo to MS-Windows.
+Please see \verb!package-win.lisp!, you need to load the
+\lstinline!cl-cairo2-win! library to use this code.
 
 \subsection{To Do}
 \label{sec:todo}
@@ -390,7 +408,6 @@ contexts.
 The list below reflects my priorities.  If you need something, please
 let me know.
 \begin{itemize}
-\item Win32 surfaces (I can't do it, I don't use Windows)
 \item CLOS integration for fonts (as suggested
   \href{http://www.cairographics.org/manual/bindings-fonts.html}{here})
 \end{itemize}

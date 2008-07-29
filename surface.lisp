@@ -1,11 +1,7 @@
 (in-package :cl-cairo2)
 ;;;;
 ;;;;  Notes
-;;;;
-;;;;  image-surface-get-stride is not implemented, as I don't see how
-;;;;    it would be used (ask if you need it).
-;;;;
-;;;;  functions that write to/read from streams are not implemented
+;;;;  - functions that write to/read from streams are not implemented
 
 
 
@@ -148,6 +144,12 @@
 			       width height)
    width height t))
 
+(defun create-image-surface-for-data (data format width height stride)
+  (new-surface-with-check
+   (cairo_image_surface_create_for_data data (lookup-enum format table-format)
+										width height stride)
+   width height t))
+
 (defun get-bytes-per-pixel (format)
   (case format
     (format-argb32 4)
@@ -155,17 +157,23 @@
     (format-a8 1)
     (otherwise (error (format nil "unknown format: ~a" format))))) ;todo: how does format-a1 fit in here?
 
-(defun image-surface-get-data (surface)
+(defun image-surface-get-data (surface &key (pointer-only nil))
+  "get the pointer referencing the image data directly. Then return it immediately when pointer-only is t.
+Otherwise, return the copy of the image data along with the pointer."
   (with-cairo-object (surface pointer)
-    (let* ((width (image-surface-get-width surface))
-           (height (image-surface-get-height surface))
-           (bytes-per-pixel (get-bytes-per-pixel (image-surface-get-format surface)))
-           (buffer (make-array (* width height bytes-per-pixel) :element-type '(unsigned-byte 8) :fill-pointer 0))
-           (data (cairo_image_surface_get_data pointer)))
-      (loop for i from 0 below (* width height bytes-per-pixel) do
-         (vector-push-extend (cffi:mem-ref data :uint8 i) buffer))
-      buffer)))
-
+	(let ((data-pointer (cairo_image_surface_get_data pointer)))
+	  #+sbcl
+	  (when (sb-sys:sap= data-pointer (sb-sys:int-sap 0))
+		(warn "null surface data pointer returned."))
+	  (if pointer-only
+		  data-pointer
+		  (let* ((width (image-surface-get-width surface))
+				 (height (image-surface-get-height surface))
+				 (bytes-per-pixel (get-bytes-per-pixel (image-surface-get-format surface)))
+				 (buffer (make-array (* width height bytes-per-pixel) :element-type '(unsigned-byte 8) :fill-pointer 0)))
+			(loop for i from 0 below (* width height bytes-per-pixel) do
+				 (vector-push-extend (cffi:mem-ref data-pointer :uint8 i) buffer))
+			(values buffer data-pointer))))))
 
 (defun image-surface-get-format (surface)
   (with-cairo-object (surface pointer)
@@ -178,6 +186,10 @@
 (defun image-surface-get-height (surface)
   (with-cairo-object (surface pointer)
     (cairo_image_surface_get_height pointer)))
+
+(defun image-surface-get-stride (surface)
+  (with-cairo-object (surface pointer)
+	(cairo_image_surface_get_stride pointer)))
 
 ;;;;
 ;;;;  PNG surfaces
@@ -194,5 +206,11 @@
 
 (defun surface-write-to-png (surface filename)
   (with-cairo-object (surface pointer)
-    (cairo_surface_write_to_png pointer filename)))
+	(let ((status (cairo_surface_write_to_png pointer filename)))
+	  (unless (eq (lookup-cairo-enum status table-status) :success)
+		(warn "function returned with status ~a." status)))))
 
+(defmacro with-png-surface ((png-file surface-name) &body body)
+  `(let ((,surface-name (image-surface-create-from-png ,png-file)))
+	 (unwind-protect (progn ,@body)
+	   (destroy ,surface-name))))

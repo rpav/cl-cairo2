@@ -1,12 +1,18 @@
 (in-package :cl-cairo2)
 
-;; (define-foreign-library libcairo
-;;   (:unix (:or "libcairo.so.2" "libcairo.so"))
-;;   (t (:default "libcairo")))
+#+darwin (pushnew "/usr/local/lib/" *foreign-library-directories*)
+#+darwin (pushnew "/opt/local/lib/" *foreign-library-directories*)
 
-;; (use-foreign-library libcairo)
+;;;; The library search order should look like below because on Mac both
+;;;; 'darwin' and 'unix' are defined in *feature* and we want to load .dylib
+;;;; version of library.
 
-(load-foreign-library '(:default "libcairo"))
+(define-foreign-library :libcairo
+	(cffi-features:darwin	"libcairo.dylib")
+  	(cffi-features:unix	"libcairo.so")
+	(cffi-features:windows	"libcairo-2.dll"))
+	 
+(load-foreign-library :libcairo)
 
 (defun deg-to-rad (deg)
   "Convert degrees to radians."
@@ -30,7 +36,6 @@
             suffix (substitute #\_ #\- suffix))
     (intern (concatenate 'string (string-upcase prefix)
 			 name-as-string (string-upcase suffix)))))
-
 
 (defun copy-double-vector-to-pointer (vector pointer)
   "Copies vector of double-floats to a memory location."

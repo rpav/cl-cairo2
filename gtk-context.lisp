@@ -5,9 +5,10 @@
 ;; written by Peter Hildebrandt <peter.hildebrandt@washbear-network.de>
 
 (define-foreign-library :gdk
-  (cffi-features:unix "libgdk-x11-2.0.so")
-  (cffi-features:windows "libgdk-win32-2.0-0.dll")
-  (cffi-features:darwin "libgdk-win32-2.0-0.dylib"))
+  ;; 'darwin' comes before 'unix' because Mac OS X defines them both.
+  (cffi-features:darwin		"libgdk-x11-2.0.dylib")
+  (cffi-features:unix		"libgdk-x11-2.0.so")
+  (cffi-features:windows	"libgdk-win32-2.0-0.dll"))
 
 (load-foreign-library :gdk)
 (defcfun ("gdk_cairo_create" gdk-cairo-create) :pointer (window :pointer))
