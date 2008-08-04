@@ -58,7 +58,8 @@
 	(setf format 32)
 	(setf data0 message)
 	(xsendevent display-pointer signal-window 0 0 xev))
-      (xflush display-pointer))))
+      #| (xflush display-pointer) |#
+      (xsync display-pointer 0))))
 
 (defmethod sync ((object xlib-image-context))
   (when (zerop (sync-counter object))
