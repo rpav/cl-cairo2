@@ -1,16 +1,6 @@
 
 (in-package :cl-cairo2)
 
-;; define our own alias for double float, so we can automatically
-;; convert other numerical types in the arguments
-(define-foreign-type my-double-type ()
-  ()
-  (:actual-type :double)
-  (:simple-parser my-double))
-                                                                              
-(defmethod translate-to-foreign (value (type my-double-type))
-  (coerce value 'double-float))
-
 ;; typedefs: we don't want to create all of them automatically,
 ;; because typedefs for structures confuse with-foreign-slots
 ;; the ones we don't want are commented out
@@ -93,7 +83,15 @@
 
 (cl:defconstant CAIRO_HAS_PS_SURFACE 1)
 
+(cl:defconstant CAIRO_HAS_FT_FONT 1)
+
 (cl:defconstant CAIRO_HAS_PNG_FUNCTIONS 1)
+
+(cl:defconstant CAIRO_HAS_XCB_SURFACE 1)
+
+(cl:defconstant CAIRO_HAS_XLIB_XRENDER_SURFACE 1)
+
+(cl:defconstant CAIRO_HAS_XLIB_SURFACE 1)
 
 (cl:defconstant CAIRO_FORMAT_RGB16_565 4)
 
@@ -1207,6 +1205,23 @@
   (y :pointer))
 
 (cffi:defcfun ("cairo_debug_reset_static_data" cairo_debug_reset_static_data) :void)
+
+(cffi:defcfun ("cairo_ft_font_face_create_for_pattern" cairo_ft_font_face_create_for_pattern) :pointer
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_ft_font_options_substitute" cairo_ft_font_options_substitute) :void
+  (options :pointer)
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_ft_font_face_create_for_ft_face" cairo_ft_font_face_create_for_ft_face) :pointer
+  (face :pointer)
+  (load_flags :int))
+
+(cffi:defcfun ("cairo_ft_scaled_font_lock_face" cairo_ft_scaled_font_lock_face) :pointer
+  (scaled_font :pointer))
+
+(cffi:defcfun ("cairo_ft_scaled_font_unlock_face" cairo_ft_scaled_font_unlock_face) :void
+  (scaled_font :pointer))
 
 (cffi:defcenum cairo_ps_level_t
 	:CAIRO_PS_LEVEL_2
