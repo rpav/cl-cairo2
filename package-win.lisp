@@ -1,7 +1,7 @@
 (in-package #:cl-cairo2-win-asd)
 
 (defpackage cl-cairo2-win
-  (:use :common-lisp :cl-cairo2 :cl-utilities)
+  (:use :common-lisp :cffi :cl-colors :cl-utilities :cl-cairo2)
   (:export
 
    ;; win32

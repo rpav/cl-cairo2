@@ -8,8 +8,10 @@
   :version "0.1"
   :author "Tamas K Papp"
   :license "GPL"
-  :components ((:file "package-x11")
-	       (:file "xlib" :depends-on ("package-x11"))
+  :serial t
+  :components ((:file "cl-cairo2-x11-swig")
+	       (:file "libraries-x11" :depends-on ("cl-cairo2-x11-swig"))
+	       (:file "xlib" :depends-on ("libraries-x11"))
 	       (:file "xlib-image-context" :depends-on ("xlib"))
-	       (:file "gtk-context" :depends-on ("package-x11")))
+	       (:file "gtk-context" :depends-on ("libraries-x11")))
   :depends-on (:cl-cairo2))

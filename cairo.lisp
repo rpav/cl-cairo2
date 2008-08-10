@@ -1,5 +1,6 @@
 (in-package :cl-cairo2)
 
+;; is this really needed? OS should set this up properly
 #+darwin (pushnew "/usr/local/lib/" *foreign-library-directories*)
 #+darwin (pushnew "/opt/local/lib/" *foreign-library-directories*)
 

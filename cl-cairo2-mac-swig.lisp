@@ -1,15 +1,5 @@
 (in-package :cl-cairo2)
 
-;; define our own alias for double float, so we can automatically
-;; convert other numerical types in the arguments
-(define-foreign-type my-double-type ()
-  ()
-  (:actual-type :double)
-  (:simple-parser my-double))
-                                                                              
-(defmethod translate-to-foreign (value (type my-double-type))
-  (coerce value 'double-float))
-
 ;; typedefs: we don't want to create all of them automatically,
 ;; because typedefs for structures confuse with-foreign-slots
 ;; the ones we don't want are commented out
@@ -96,11 +86,34 @@
 
 (cl:defconstant CAIRO_HAS_PNG_FUNCTIONS 1)
 
-(cl:defconstant CAIRO_HAS_XCB_SURFACE 1)
+(cl:defconstant CAIRO_HAS_QUARTZ_IMAGE_SURFACE 1)
+
+(cl:defconstant CAIRO_HAS_QUARTZ_FONT 1)
+
+(cl:defconstant CAIRO_HAS_QUARTZ_SURFACE 1)
 
 (cl:defconstant CAIRO_HAS_XLIB_XRENDER_SURFACE 1)
 
 (cl:defconstant CAIRO_HAS_XLIB_SURFACE 1)
+
+(cffi:defcfun ("cairo_quartz_surface_create" cairo_quartz_surface_create) :pointer
+  (format :pointer)
+  (width :unsigned-int)
+  (height :unsigned-int))
+
+(cffi:defcfun ("cairo_quartz_surface_create_for_cg_context" cairo_quartz_surface_create_for_cg_context) :pointer
+  (cgContext :pointer)
+  (width :unsigned-int)
+  (height :unsigned-int))
+
+(cffi:defcfun ("cairo_quartz_surface_get_cg_context" cairo_quartz_surface_get_cg_context) :pointer
+  (surface :pointer))
+
+(cffi:defcfun ("cairo_quartz_font_face_create_for_cgfont" cairo_quartz_font_face_create_for_cgfont) :pointer
+  (font :pointer))
+
+(cffi:defcfun ("cairo_quartz_font_face_create_for_atsu_font_id" cairo_quartz_font_face_create_for_atsu_font_id) :pointer
+  (font_id :pointer))
 
 (cffi:defcfun ("cairo_xlib_surface_create_with_xrender_format" cairo_xlib_surface_create_with_xrender_format) :pointer
   (dpy :pointer)

@@ -4,14 +4,6 @@
 ;;;; a limited interface to certain Xlib functions
 ;;;;
 
-#+darwin (pushnew "/usr/X11/lib/" *foreign-library-directories*)
-
-(define-foreign-library :libX11
-  (cffi-features:darwin "libX11.dylib")
-  (cffi-features:unix "libX11.so"))
-
-(load-foreign-library :libX11)
-
 ;;;; types
 
 (defctype display :pointer)

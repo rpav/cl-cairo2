@@ -4,13 +4,6 @@
 ;; library functions to create a gdk-surface 
 ;; written by Peter Hildebrandt <peter.hildebrandt@washbear-network.de>
 
-(define-foreign-library :gdk
-  ;; 'darwin' comes before 'unix' because Mac OS X defines them both.
-  (cffi-features:darwin		"libgdk-x11-2.0.dylib")
-  (cffi-features:unix		"libgdk-x11-2.0.so")
-  (cffi-features:windows	"libgdk-win32-2.0-0.dll"))
-
-(load-foreign-library :gdk)
 (defcfun ("gdk_cairo_create" gdk-cairo-create) :pointer (window :pointer))
 
 (defclass gtk-context (context)
@@ -39,3 +32,6 @@ to the expose event handler."
        (with-context (,context ,context-pointer)
          ,@body)
        (destroy ,context))))
+
+;; export manually
+(export '(xlib-image-context create-xlib-image-context))

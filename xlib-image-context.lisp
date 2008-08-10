@@ -211,3 +211,5 @@ background-color is not nil, the window will be painted with it."
 (defmethod destroy ((object xlib-image-context))
   (send-message-to-signal-window object +destroy-message+))
 
+;; export manually
+(export '(xlib-image-context create-xlib-image-context))

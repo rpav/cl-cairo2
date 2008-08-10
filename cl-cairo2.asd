@@ -1,4 +1,3 @@
-;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 (defpackage #:cl-cairo2-asd
   (:use :cl :asdf))
 
@@ -11,7 +10,8 @@
   :license "GPL"
   :components ((:file "package")
                (:file "cairo" :depends-on ("package"))
-  	       (:file "cl-cairo2-swig" :depends-on ("cairo"))
+	       (:file "my-double" :depends-on ("package"))
+  	       (:file "cl-cairo2-swig" :depends-on ("cairo" "my-double"))
                (:file "tables" :depends-on ("cl-cairo2-swig"))
                (:file "surface" :depends-on ("cairo" "tables" "cl-cairo2-swig"))
                (:file "context" :depends-on ("surface" "tables" "cl-cairo2-swig"))
@@ -21,4 +21,5 @@
                (:file "path" :depends-on ("context"))
                (:file "text" :depends-on ("context"))
                (:file "transformations" :depends-on ("context")))
-  :depends-on (:cffi :cl-colors :cl-utilities :trivial-garbage))
+  :depends-on (:cffi :cl-colors :cl-utilities :trivial-garbage
+		     :trivial-features))

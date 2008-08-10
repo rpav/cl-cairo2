@@ -1,0 +1,2 @@
+- replace deprecated cffi-features with trivial-features
+- common code for foreign-library-directories
