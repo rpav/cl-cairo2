@@ -9,8 +9,9 @@
   :version "0.1"
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"
-  :components ((:file "cl-cairo2-mac-swig" :depends-on ("package-mac"))
-	       (:file "xlib" :depends-on ("package-mac"))
+  :components ((:file "cl-cairo2-mac-swig")
+	       (:file "libraries-x11" :depends-on ("cl-cairo2-mac-swig"))
+	       (:file "xlib" :depends-on ("libraries-x11"))
 	       (:file "xlib-image-context" :depends-on ("xlib"))
-	       (:file "gtk-context" :depends-on ("package-mac")))
+	       (:file "gtk-context" :depends-on ("libraries-x11")))
   :depends-on (:cl-cairo2))

@@ -1,3 +1,4 @@
+
 (in-package :cl-cairo2)
 
 ;; typedefs: we don't want to create all of them automatically,
@@ -96,6 +97,34 @@
 
 (cl:defconstant CAIRO_HAS_XLIB_SURFACE 1)
 
+(cffi:defcfun ("cairo_ft_font_face_create_for_pattern" cairo_ft_font_face_create_for_pattern) :pointer
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_ft_font_options_substitute" cairo_ft_font_options_substitute) :void
+  (options :pointer)
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_ft_font_face_create_for_ft_face" cairo_ft_font_face_create_for_ft_face) :pointer
+  (face :pointer)
+  (load_flags :int))
+
+(cffi:defcfun ("cairo_ft_scaled_font_lock_face" cairo_ft_scaled_font_lock_face) :pointer
+  (scaled_font :pointer))
+
+(cffi:defcfun ("cairo_ft_scaled_font_unlock_face" cairo_ft_scaled_font_unlock_face) :void
+  (scaled_font :pointer))
+
+(cffi:defcfun ("cairo_xlib_surface_create_with_xrender_format" cairo_xlib_surface_create_with_xrender_format) :pointer
+  (dpy :pointer)
+  (drawable :pointer)
+  (screen :pointer)
+  (format :pointer)
+  (width :int)
+  (height :int))
+
+(cffi:defcfun ("cairo_xlib_surface_get_xrender_format" cairo_xlib_surface_get_xrender_format) :pointer
+  (surface :pointer))
+
 (cffi:defcfun ("cairo_quartz_surface_create" cairo_quartz_surface_create) :pointer
   (format :pointer)
   (width :unsigned-int)
@@ -114,16 +143,5 @@
 
 (cffi:defcfun ("cairo_quartz_font_face_create_for_atsu_font_id" cairo_quartz_font_face_create_for_atsu_font_id) :pointer
   (font_id :pointer))
-
-(cffi:defcfun ("cairo_xlib_surface_create_with_xrender_format" cairo_xlib_surface_create_with_xrender_format) :pointer
-  (dpy :pointer)
-  (drawable :pointer)
-  (screen :pointer)
-  (format :pointer)
-  (width :int)
-  (height :int))
-
-(cffi:defcfun ("cairo_xlib_surface_get_xrender_format" cairo_xlib_surface_get_xrender_format) :pointer
-  (surface :pointer))
 
 

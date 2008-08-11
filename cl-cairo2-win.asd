@@ -10,5 +10,5 @@
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"
   :components ((:file "cl-cairo2-win-swig")
-	       (:file "win32" :depends-on ("package-win")))
+	       (:file "win32" :depends-on ("cl-cairo2-win-swig")))
   :depends-on (:cl-cairo2))
