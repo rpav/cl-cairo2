@@ -12,7 +12,8 @@
 
 (defpackage :cairo-demos
   (:use :common-lisp :cl-cairo2)
-  #+sbcl (:use :sb-sys)
+  #+sbcl
+  (:use :sb-sys)
   (:export :image-data-demo1
 		   :image-data-demo2))
 
@@ -37,29 +38,38 @@
 		(error "~A (see *png-dir*) doesn't exist" pngdir))))
 
 (defmacro argb-to-argb32 (a r g b)
-  #+(or x86 ppc) `(logior (ash ,a 24) (ash ,r 16) (ash ,g 8) ,b)
-  #-(or x86 ppc) `(logior (ash ,b 24) (ash ,g 16) (ash ,r 8) ,a))
+  #+(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
+  `(logior (ash ,a 24) (ash ,r 16) (ash ,g 8) ,b)
+  #-(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
+  (error "no implemented"))
 
 (defmacro write-argb32 (sap idx argb32)
-  #+sbcl `(setf (sap-ref-32 ,sap ,idx) ,argb32)
-  #-sbcl (error "not implemented"))
+  #+sbcl
+  `(setf (sap-ref-32 ,sap ,idx) ,argb32)
+  #+ccl
+  `(setf (ccl:%get-unsigned-long ,sap ,idx) ,argb32)
+  #-(or sbcl ccl)
+  (error "not implemented"))
 
 (defmacro write-argb (sap idx a r g b)
   `(write-argb32 ,sap ,idx (argb-to-argb32 ,a ,r ,g ,b)))
 
 (defmacro argb-from-argb32 (argb32)
-  #+(or x86 ppc) `(values (logand #xff (ash ,argb32 -24))
-						  (logand #xff (ash ,argb32 -16))
-						  (logand #xff (ash ,argb32 -8))
-						  (logand #xff ,argb32))
-  #-(or x86 ppc) `(values (logand #xff ,argb32)
-						  (logand #xff (ash ,argb32 -8))
-						  (logand #xff (ash ,argb32 -16))
-						  (logand #xff (ash ,argb32 -24))))
+  #+(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
+  `(values (logand #xff (ash ,argb32 -24))
+		   (logand #xff (ash ,argb32 -16))
+		   (logand #xff (ash ,argb32 -8))
+		   (logand #xff ,argb32))
+  #-(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
+  (error "not implemented"))
 
 (defmacro read-argb32 (sap idx)
-  #+sbcl `(sap-ref-32 ,sap ,idx)
-  #-sbcl (error "not implemented"))
+  #+sbcl
+  `(sap-ref-32 ,sap ,idx)
+  #+ccl
+  `(ccl:%get-unsigned-long ,sap ,idx)
+  #-(or sbcl ccl)
+  (error "not implemented"))
 
 (defmacro read-argb (sap idx)
   `(argb-from-argb32 (read-argb32 ,sap ,idx)))

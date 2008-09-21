@@ -171,7 +171,7 @@
 		  (if (< (/ rect-height 2) radius)
 			  (progn
 				(move-to x0 (/ (+ y0 y1) 2))
-				(curve-to x0 y0 x0 y0 (/ (+ x0 radius) y0))
+				(curve-to x0 y0 x0 y0 (+ x0 radius) y0)
 				(line-to (- x1 radius) y0)
 				(curve-to x1 y0 x1 y0 x1 (/ (+ y0 y1) 2))
 				(curve-to x1 y1 x1 y1 (- x1 radius) y1)

@@ -12,7 +12,7 @@
 (define-foreign-library :gdk
   ;; 'darwin' comes before 'unix' because Mac OS X defines them both.
   (:darwin "libgdk-x11-2.0.dylib")
-  (:unix "libgdk-x11-2.0.so")
+  (:unix (:or "libgdk-x11-2.0.so" "libgdk-x11-2.0.so.0"))
   (:windows "libgdk-win32-2.0-0.dll"))
 
 (load-foreign-library :gdk)
