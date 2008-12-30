@@ -10,7 +10,7 @@
 
 (define-foreign-library :libcairo
 	(cffi-features:darwin	"libcairo.dylib")
-  	(cffi-features:unix	"libcairo.so")
+  	(:or (cffi-features:unix "libcairo.so.2") (cffi-features:unix "libcairo.so"))
 	(cffi-features:windows	"libcairo-2.dll"))
 	 
 (load-foreign-library :libcairo)
