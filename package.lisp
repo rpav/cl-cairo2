@@ -2,6 +2,7 @@
 
 (defpackage cl-cairo2
   (:use :common-lisp :cffi :cl-colors :cl-utilities)
+  (:nicknames :cairo)
   (:export
 
    ;; cairo
