@@ -19,8 +19,8 @@
 ;;;;
 
 (defclass context (cairo-object) 
-  ((width :initarg :width :reader get-width)
-   (height :initarg :height :reader get-height)
+  ((width :initarg :width :reader width)
+   (height :initarg :height :reader height)
    (pixel-based-p :initarg :pixel-based-p :reader pixel-based-p)))
 
 
@@ -41,8 +41,8 @@
   (with-cairo-object (surface pointer)
     (let ((context (make-instance 'context
 				  :pointer (cairo_create pointer)
-				  :width (get-width surface)
-				  :height (get-height surface)
+				  :width (width surface)
+				  :height (height surface)
 				  :pixel-based-p (pixel-based-p surface))))
       ;; register finalizer
      ; (let ((context-pointer (slot-value context 'pointer)))

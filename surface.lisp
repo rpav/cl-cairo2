@@ -9,10 +9,10 @@
 ;;;;  class cairo-object
 ;;;;
 
-(defgeneric get-width (object)
+(defgeneric width (object)
   (:documentation "return the width of an object"))
 
-(defgeneric get-height (object)
+(defgeneric height (object)
   (:documentation "return the height of an object"))
 
 (defgeneric pixel-based-p (object)
@@ -77,8 +77,8 @@
 
 
 (defclass surface (cairo-object) 
-  ((width :initarg :width :reader get-width)
-   (height :initarg :height :reader get-height)
+  ((width :initarg :width :reader width)
+   (height :initarg :height :reader height)
    (pixel-based-p :initarg :pixel-based-p :reader pixel-based-p)))
 
 (defmethod lowlevel-destroy ((surface surface))

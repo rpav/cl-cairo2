@@ -11,12 +11,13 @@
     
    ;; surface
     
-   surface pointer width height get-width get-height pixel-based-p
-   destroy create-ps-surface create-pdf-surface create-svg-surface
+   surface pointer width height pixel-based-p destroy
+   create-ps-surface create-pdf-surface create-svg-surface
    create-image-surface create-image-surface-for-data
-   image-surface-get-format image-surface-get-width image-surface-get-height
-   image-surface-get-data image-surface-get-stride
-   image-surface-create-from-png surface-write-to-png with-png-surface
+   image-surface-get-format image-surface-get-width
+   image-surface-get-height image-surface-get-data
+   image-surface-get-stride image-surface-create-from-png
+   surface-write-to-png with-png-surface
    
    ;; context
     
