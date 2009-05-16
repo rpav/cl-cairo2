@@ -1,15 +1,8 @@
-EXAMPLEFILES=hearts.png lissajous.eps text.eps example.eps pattern.eps
-RAWEXAMPLEFILES=hearts.png lissajous.pdf text.pdf example.pdf pattern.pdf
+EXAMPLEFILES=hearts.pdf lissajous.pdf text.pdf example.pdf pattern.pdf
 LISP=sbcl
 
-tutorial.pdf: tutorial.dvi
-	dvipdfm tutorial
+tutorial.pdf: tutorial.tex $(EXAMPLEFILES)
+	pdflatex tutorial.tex
 
-tutorial.dvi: tutorial.tex $(EXAMPLEFILES)
-	latex tutorial.tex
-
-$(RAWEXAMPLEFILES): example.lisp
+$(EXAMPLEFILES): example.lisp
 	$(LISP) --eval '(progn (load "example.lisp") (quit))'
-
-%.eps: %.pdf
-	pdf2ps $< $@

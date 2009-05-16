@@ -181,4 +181,5 @@ and then execute body in which the patterns can be referenced using the names."
 	  `(let ,(loop for f in pattern-forms collect `(,(car f) ,(cadr f)))
 		 (unwind-protect (progn ,@body)
 		   (progn
-			 ,@(loop for f in pattern-forms collect `(destroy ,(car f))))))))
+			 ,@(loop for f in pattern-forms collect
+				`(destroy ,(car f))))))))

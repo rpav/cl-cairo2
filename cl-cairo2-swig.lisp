@@ -83,7 +83,17 @@
 
 (cl:defconstant CAIRO_HAS_PS_SURFACE 1)
 
+(cl:defconstant CAIRO_HAS_FT_FONT 1)
+
+(cl:defconstant CAIRO_HAS_DIRECTFB_SURFACE 1)
+
 (cl:defconstant CAIRO_HAS_PNG_FUNCTIONS 1)
+
+(cl:defconstant CAIRO_HAS_XCB_SURFACE 1)
+
+(cl:defconstant CAIRO_HAS_XLIB_XRENDER_SURFACE 1)
+
+(cl:defconstant CAIRO_HAS_XLIB_SURFACE 1)
 
 (cl:defconstant CAIRO_FORMAT_RGB16_565 4)
 

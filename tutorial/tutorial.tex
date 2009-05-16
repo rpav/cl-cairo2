@@ -1,4 +1,4 @@
-\documentclass[12pt,letterpaper,dvipdfm]{article}
+\documentclass[12pt,letterpaper]{article}
 
 % \usepackage{amsmath}
 % \usepackage{amsfonts}
@@ -116,16 +116,15 @@ you build a path (which you want to fill with a color/pattern, stroke
 with a given line style, or even save), all of this happens in a
 context.
 
-All \verb!cl-cairo2! functions that use a context take it as
-their last optional argument.  If not given, these functions use
-\lstinline!*context*!, a special variable that stores the default
-context.
-
-Contexts are created from \emph{surfaces} --- which, at this point,
-should be thought of as the bare canvas itself (think of PDF,
-PostScript, of PNG files). All
-Cairo objects, including contexts and surfaces, are implemented in
-CLOS wrappers, and can be closed (\emph{destroyed}) with
+All \verb!cl-cairo2! functions that use a context take it as their
+first argument.\footnote{This is a change from previous versions of
+  \texttt{cl-cairo2}, where the context was the last argument, it was
+  optional and the default was stored in a global variable.  Believe
+  me, that was a huge wart.}  Contexts are created from
+\emph{surfaces} --- which, at this point, should be thought of as the
+bare canvas itself (think of PDF, PostScript, of PNG files). All Cairo
+objects, including contexts and surfaces, are implemented in CLOS
+wrappers, and can be closed (\emph{destroyed}) with
 \lstinline!destroy!.
 
 When the context is created from a surface, the reference count (in
@@ -142,7 +141,7 @@ result is shown in Figure~\ref{fig:example}.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics{example.eps}
+  \includegraphics{example.pdf}
   \caption{white diagonal line on a blue background}
   \label{fig:example}
 \end{figure}
@@ -152,7 +151,7 @@ the \lstinline!create-*-context! convenience commands provided by
 cl-cairo2.  For example, the first three lines of the code above would
 be replaced by
 \begin{lstlisting}
-(setf *context* (create-ps-context "example.ps" 200 100))
+(defparameter *context* (create-ps-context "example.ps" 200 100))
 \end{lstlisting}
 Unlike the original Cairo API, surfaces and contexts in
 \lstinline!cl-cairo2! remember their width and height.  Use the
@@ -176,9 +175,9 @@ package map these to the enum constants used by Cairo.  cl-cairo2 uses
 lookup tables (assoc lists) for this purpose, which are defined in
 \verb!tables.lisp!.  Cairo constants
 \texttt{CAIRO\_\textsl{PROPERTY}\_\textsl{SOMETHING}} usually map to
-the Lisp symbol \lstinline!property-something!, and can only be used
-in setting or querying \texttt{PROPERTY}.  For example,
-\verb!CAIRO_FORMAT_RGB24!  is mapped to \lstinline!format-rgb24!, and
+the Lisp keyword symbol \lstinline!:property-something!, and can only
+be used in setting or querying \texttt{PROPERTY}.  For example,
+\verb!CAIRO_FORMAT_RGB24!  is mapped to \lstinline!:format-rgb24!, and
 using it for some other property will create an error.
 
 Likewise, names of the Lisp function are easy to deduce from the name
@@ -244,9 +243,7 @@ package for that.
 
 Contexts are represented as the class \lstinline!context!, which
 currently only has one slot, a pointer to the context.  When contexts
-are destroyed, this is set to \lstinline!nil!.  As mentioned above,
-the default context is \lstinline!*context*!, and it is the default
-for the last (optional) argument of each function.
+are destroyed, this is set to \lstinline!nil!.
 
 The macro \lstinline!with-context! is similar to
 \lstinline!with-surface! above (it executes the body with pointer
@@ -430,29 +427,29 @@ the results.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[height=8cm]{text.eps}
-  \caption{text.ps}
+  \includegraphics[height=8cm]{text.pdf}
+  \caption{text.pdf}
   \label{fig:text}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[height=8cm]{lissajous.eps}
-  \caption{lissajous.ps}
+  \includegraphics[height=8cm]{lissajous.pdf}
+  \caption{lissajous.pdf}
   \label{fig:lissajous}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[natwidth=12cm, natheight=9cm]{hearts.png}
-  \caption{hearts.png}
+  \includegraphics[height=8cm]{hearts.pdf}
+  \caption{hearts.pdf}
   \label{fig:hearts}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[height=4cm]{pattern.eps}
-  \caption{pattern.ps}
+  \includegraphics[height=4cm]{pattern.pdf}
+  \caption{pattern.pdf}
   \label{fig:pattern}
 \end{figure}
 

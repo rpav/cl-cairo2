@@ -22,15 +22,15 @@
    ;; context
     
    context with-png-file create-context sync sync-lock sync
-   sync-unlock sync-reset with-sync-lock *context* save restore
-   push-group pop-group pop-group-to-source set-source-rgb
-   set-source-rgba clip clip-preserve reset-clip copy-page show-page
-   fill-preserve paint paint-with-alpha stroke stroke-preserve
-   set-source-color get-line-width set-line-width get-miter-limit
-   set-miter-limit get-antialias set-antialias get-fill-rule
-   set-fill-rule get-line-cap set-line-cap get-line-join set-line-join
-   get-operator set-operator fill-path set-dash get-dash clip-extents
-   fill-extents in-fill in-stoke create-ps-context create-pdf-context
+   sync-unlock sync-reset with-sync-lock save restore push-group
+   pop-group pop-group-to-source set-source-rgb set-source-rgba clip
+   clip-preserve reset-clip copy-page show-page fill-preserve paint
+   paint-with-alpha stroke stroke-preserve set-source-color
+   get-line-width set-line-width get-miter-limit set-miter-limit
+   get-antialias set-antialias get-fill-rule set-fill-rule
+   get-line-cap set-line-cap get-line-join set-line-join get-operator
+   set-operator fill-path set-dash get-dash clip-extents fill-extents
+   in-fill in-stoke create-ps-context create-pdf-context
    create-svg-context get-target set-source-surface
 
    ;;pattern

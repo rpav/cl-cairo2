@@ -92,18 +92,18 @@ nonlocal exits."
 ;;;; default context and convenience macros 
 ;;;;
 
-(defvar *context* nil "default cairo context")
-
-(defmacro with-png-file ((filename format width height &optional (surface-name (gensym))) &body body)
+(defmacro with-png-file ((context filename format width height 
+				  &optional (surface-name (gensym))) &body body)
   "Execute the body with context bound to a newly created png
    file, and close it after executing body."
-  `(let* ((,surface-name (create-image-surface ,format ,width ,height))
-		  (*context* (create-context ,surface-name)))
-	 (unwind-protect (progn ,@body)
-	   (progn
-		 (surface-write-to-png ,surface-name ,filename)
-		 (destroy *context*)
-		 (destroy ,surface-name)))))
+  (once-only (context)
+    `(let* ((,surface-name (create-image-surface ,format ,width ,height))
+	    (,context (create-context ,surface-name)))
+       (unwind-protect (progn ,@body)
+	 (progn
+	   (surface-write-to-png ,surface-name ,filename)
+	   (destroy ,context)
+	   (destroy ,surface-name))))))
 
 (defmacro with-context ((context pointer) &body body)
   "Execute body with pointer pointing to context, and check status."
@@ -119,18 +119,18 @@ nonlocal exits."
 	   (warn "context is not alive")))))
 
 (defmacro define-with-default-context (name &rest args)
-  "Define cairo function with *context* as its first argument and
+  "Define cairo function with context as its first argument and
   args as the rest, automatically mapping name to the appropriate
   cairo function."
-  `(defun ,name (,@args &optional (context *context*))
+  `(defun ,name (context ,@args)
      (with-context (context pointer)
        (,(prepend-intern "cairo_" name) pointer ,@args))))
 
 (defmacro define-with-default-context-sync (name &rest args)
-  "Define cairo function with *context* as its first argument and
+  "Define cairo function with context as its first argument and
   args as the rest, automatically mapping name to the appropriate
   cairo function.  sync will be called after the operation."
-  `(defun ,name (,@args &optional (context *context*))
+  `(defun ,name (context ,@args)
      (with-context (context pointer)
        (,(prepend-intern "cairo_" name) pointer ,@args))
      (sync context)))
@@ -138,7 +138,7 @@ nonlocal exits."
 (defmacro define-flexible ((name pointer &rest args) &body body)
   "Like define-with-default context, but with arbitrary body,
   pointer will point to the context."
-  `(defun ,name (,@args &optional (context *context*))
+  `(defun ,name (context ,@args)
      (with-context (context ,pointer)
        ,@body)))
 
@@ -195,7 +195,7 @@ nonlocal exits."
 (define-with-default-context-sync stroke)
 (define-with-default-context-sync stroke-preserve)
 
-(defun set-source-surface (image x y &optional (context *context*))
+(defun set-source-surface (context image x y)
   (with-alive-object (image i-pointer)
 	(with-context (context c-pointer)
 	  (cairo_set_source_surface c-pointer i-pointer x y))))
@@ -212,17 +212,17 @@ will be nil, as cairo can't provide that in general."
 ;;;; set colors using the cl-colors library
 ;;;;
 
-(defgeneric set-source-color (color &optional context))
+(defgeneric set-source-color (context color))
 
-(defmethod set-source-color ((color rgb) &optional (context *context*))
+(defmethod set-source-color (context (color rgb))
   (with-slots (red green blue) color
     (set-source-rgb red green blue context)))
 
-(defmethod set-source-color ((color rgba) &optional (context *context*))
+(defmethod set-source-color (context (color rgba))
   (with-slots (red green blue alpha) color
     (set-source-rgba red green blue alpha context)))
 
-(defmethod set-source-color ((color hsv) &optional (context *context*))
+(defmethod set-source-color (context (color hsv))
   (with-slots (red green blue) (hsv->rgb color)
     (set-source-rgb red green blue context)))
 
