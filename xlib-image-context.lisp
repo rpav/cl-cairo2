@@ -201,7 +201,7 @@ background-color is not nil, the window will be painted with it."
 		   (format nil "thread for display ~a" display-name))))))
       ;; paint it if we are given a background color
       (when background-color
-	(set-source-color background-color xlib-image-context)
+	(set-source-color xlib-image-context background-color)
 	(paint xlib-image-context)
 	(sync xlib-image-context))
       ;; return context

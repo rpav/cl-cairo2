@@ -216,15 +216,15 @@ will be nil, as cairo can't provide that in general."
 
 (defmethod set-source-color (context (color rgb))
   (with-slots (red green blue) color
-    (set-source-rgb red green blue context)))
+    (set-source-rgb context red green blue)))
 
 (defmethod set-source-color (context (color rgba))
   (with-slots (red green blue alpha) color
-    (set-source-rgba red green blue alpha context)))
+    (set-source-rgba context red green blue alpha)))
 
 (defmethod set-source-color (context (color hsv))
   (with-slots (red green blue) (hsv->rgb color)
-    (set-source-rgb red green blue context)))
+    (set-source-rgb context red green blue)))
 
   
 ;;;; 
