@@ -93,17 +93,19 @@ nonlocal exits."
 ;;;;
 
 (defmacro with-png-file ((context filename format width height 
-				  &optional (surface-name (gensym))) &body body)
-  "Execute the body with context bound to a newly created png
-   file, and close it after executing body."
-  (once-only (context)
-    `(let* ((,surface-name (create-image-surface ,format ,width ,height))
-	    (,context (create-context ,surface-name)))
-       (unwind-protect (progn ,@body)
-	 (progn
-	   (surface-write-to-png ,surface-name ,filename)
-	   (destroy ,context)
-	   (destroy ,surface-name))))))
+				  &optional (surface (gensym))) &body body)
+  "Execute the body with context bound to a newly created png file,
+   and close it after executing body.  The surface will be bound to
+   surface-name."
+  (check-type context symbol)
+  (check-type surface symbol)
+  `(let* ((,surface (create-image-surface ,format ,width ,height))
+	  (,context (create-context ,surface)))
+     (unwind-protect (progn ,@body)
+       (progn
+	 (surface-write-to-png ,surface ,filename)
+	 (destroy ,context)
+	 (destroy ,surface))))))
 
 (defmacro with-context ((context pointer) &body body)
   "Execute body with pointer pointing to context, and check status."

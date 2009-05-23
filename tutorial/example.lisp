@@ -200,3 +200,17 @@
   (set-source *context* rainbow)
   (fill-path *context*))
 (destroy *context*)
+
+;;;;
+;;;;  example for with-png-file
+;;;;
+(with-png-file (context "simple.png" :rgb24 200 100)
+  ;; clear the whole canvas with blue
+  (set-source-rgb context 0.2 0.2 1)
+  (paint context)
+  ;; draw a white diagonal line
+  (move-to context 200 0)
+  (line-to context 0 100)
+  (set-source-rgb context 1 1 1)
+  (set-line-width context 5)
+  (stroke context))
