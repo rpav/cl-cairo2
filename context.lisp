@@ -105,7 +105,7 @@ nonlocal exits."
        (progn
 	 (surface-write-to-png ,surface ,filename)
 	 (destroy ,context)
-	 (destroy ,surface))))))
+	 (destroy ,surface)))))
 
 (defmacro with-context ((context pointer) &body body)
   "Execute body with pointer pointing to context, and check status."
