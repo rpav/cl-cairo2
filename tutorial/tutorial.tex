@@ -116,16 +116,20 @@ you build a path (which you want to fill with a color/pattern, stroke
 with a given line style, or even save), all of this happens in a
 context.
 
-All \verb!cl-cairo2! functions that use a context take it as their
-first argument.\footnote{This is a change from previous versions of
-  \texttt{cl-cairo2}, where the context was the last argument, it was
-  optional and the default was stored in a global variable.  Believe
-  me, that was a huge wart.}  Contexts are created from
-\emph{surfaces} --- which, at this point, should be thought of as the
-bare canvas itself (think of PDF, PostScript, of PNG files). All Cairo
-objects, including contexts and surfaces, are implemented in CLOS
-wrappers, and can be closed (\emph{destroyed}) with
-\lstinline!destroy!.
+All \verb!cl-cairo2! functions take the context as their (optional)
+last argument.  It defaults to \lstinline!*context*!.  The macro
+\lstinline!with-context! will wrap your code in a
+ \lstinline!(let ((*context* ...)) ...)! with the given context.
+  When you are writing your
+own functions that implement more complex operations, I recommend that
+you make \lstinline!context! as an optional or keyword argument, with
+\lstinline!*context*! as its default value.
+
+Contexts are created from \emph{surfaces} --- which, at this point,
+should be thought of as the bare canvas itself (think of PDF,
+PostScript, of PNG files). All Cairo objects, including contexts and
+surfaces, are implemented in CLOS wrappers, and can be closed
+(\emph{destroyed}) with \lstinline!destroy!.
 
 When the context is created from a surface, the reference count (in
 the internals of Cairo) of the latter is incremented.  You can
@@ -137,7 +141,7 @@ will not be closed) until you destroy the context.\footnote{The file
 diagonal line on a blue background, using a Postscript file -- the
 result is shown in Figure~\ref{fig:example}.
 
-\lstinputlisting[firstline=13,lastline=27]{example.lisp}
+\lstinputlisting[firstline=23,lastline=37]{example.lisp}
 
 \begin{figure}[htbp]
   \centering
@@ -245,7 +249,7 @@ Contexts are represented as the class \lstinline!context!, which
 currently only has one slot, a pointer to the context.  When contexts
 are destroyed, this is set to \lstinline!nil!.
 
-The macro \lstinline!with-context! is similar to
+The macro \lstinline!with-context-pointer! is similar to
 \lstinline!with-surface! above (it executes the body with pointer
 pointing to the object and then checks error status).  The functions
 \lstinline!define-with-default-context! defines a function acting on a
