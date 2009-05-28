@@ -1,4 +1,5 @@
-EXAMPLEFILES=hearts.pdf lissajous.pdf text.pdf example.pdf pattern.pdf
+EXAMPLEFILES=simpletext.pdf lissajous.pdf text.pdf example.pdf \
+		hearts.pdf pattern.pdf simple.png
 LISP=sbcl
 
 tutorial.pdf: tutorial.tex $(EXAMPLEFILES)
@@ -6,3 +7,6 @@ tutorial.pdf: tutorial.tex $(EXAMPLEFILES)
 
 $(EXAMPLEFILES): example.lisp
 	$(LISP) --eval '(progn (load "example.lisp") (quit))'
+
+clean:
+	rm -f $(EXAMPLEFILES)

@@ -29,7 +29,7 @@ obtain the gdk-window. 'gtk-pointer' is the pointer parameter passed
 to the expose event handler."
   (with-gensyms (context-pointer)
     `(let ((,context (create-gtk-context ,gdk-window)))
-       (with-context (,context ,context-pointer)
+       (with-context-pointer (,context ,context-pointer)
          ,@body)
        (destroy ,context))))
 

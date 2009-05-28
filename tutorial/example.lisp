@@ -8,41 +8,38 @@
 (in-package :cairo-example)
 
 ;;;;
+;;;;  pathname where files will end up, you need to change it to
+;;;;  something that makes sense on your system if you are running
+;;;;  these examples
+;;;;
+
+(setf *default-pathname-defaults* #P"/home/tpapp/software/cl-cairo2/tutorial/")
+(assert (directory *default-pathname-defaults*))
+
+;;;;
 ;;;;  short example for the tutorial
 ;;;;
 
 (defparameter *surface* (create-pdf-surface "example.pdf" 200 100))
-(defparameter *context* (create-context *surface*))
+(setf *context* (create-context *surface*))
 (destroy *surface*)
 ;; clear the whole canvas with blue
-(set-source-rgb *context* 0.2 0.2 1)
-(paint *context*)
+(set-source-rgb 0.2 0.2 1)
+(paint)
 ;; draw a white diagonal line
-(move-to *context* 200 0)
-(line-to *context* 0 100)
-(set-source-rgb *context* 1 1 1)
-(set-line-width *context* 5)
-(stroke *context*)
+(move-to 200 0)
+(line-to 0 100)
+(set-source-rgb 1 1 1)
+(set-line-width 5)
+(stroke)
 ;; destroy context, this also destroys the surface and closes the file
 (destroy *context*)
 
-;;;;
-;;;; helper functions
-;;;;
-
-(defun show-text-aligned (context text x y &optional (x-align 0.5) (y-align 0.5))
-  "Show text aligned relative to (x,y)."
-  (multiple-value-bind (x-bearing y-bearing width height)
-      (text-extents context text)
-    (move-to context (- x (* width x-align) x-bearing)
-	     (- y (* height y-align) y-bearing))
-    (show-text context text)))
-
 ;;;; very simple text example
-(defparameter *context* (create-pdf-context "simpletext.pdf" 100 100))
-(move-to *context* 0 100)
-(set-font-size *context* 50)
-(show-text *context* "foo")
+(setf *context* (create-pdf-context "simpletext.pdf" 100 100))
+(move-to 0 100)
+(set-font-size 50)
+(show-text "foo")
 (destroy *context*)
 
 
@@ -52,18 +49,34 @@
 ;;;;  This example demonstrates the use of text-extents, by placing
 ;;;;  text aligned relative to a red marker.
 
-(defun mark-at (context x y d red green blue)
+;;;;
+;;;; helper functions
+;;;;
+
+(defun show-text-aligned (text x y x-align y-align &optional
+			  (context *context*))
+  "Show text aligned relative to (x,y)."
+  (with-context (context)
+    (multiple-value-bind (x-bearing y-bearing width height)
+	(text-extents text)
+      (move-to (- x (* width x-align) x-bearing)
+	       (- y (* height y-align) y-bearing))
+      (show-text text))))
+
+(defun mark-at (x y d red green blue &optional (context *context*))
   "Make a rectangle of size 2d around x y with the given colors,
   50% alpha.  Used for marking points."
-  (rectangle context (- x d) (- y d) (* 2 d) (* 2 d))
-  (set-source-rgba context red green blue 0.5)
-  (fill-path context))
+  (with-context (context)
+    (rectangle (- x d) (- y d) (* 2 d) (* 2 d))
+    (set-source-rgba red green blue 0.5)
+    (fill-path)))
 
-(defun show-text-with-marker (context text x y x-align y-align)
+(defun show-text-with-marker (text x y x-align y-align &optional (context *context*))
   "Show text aligned relative to a red market at (x,y)."
-  (mark-at context x y 2 1 0 0)
-  (set-source-rgba context 0 0 0 0.6)
-  (show-text-aligned context text x y x-align y-align))
+  (with-context (context)
+    (mark-at x y 2 1 0 0)
+    (set-source-rgba 0 0 0 0.6)
+    (show-text-aligned text x y x-align y-align)))
 
 (defparameter width 500)
 (defparameter height 500)
@@ -71,33 +84,31 @@
 (defparameter size 50)
 (defparameter x 20d0)
 (defparameter y 50d0)
-(defparameter *context* (create-pdf-context "text.pdf" width height))
-;;(setf *context* (create-svg-context "text.svg" width height))
-;;(setf *context* (create-pdf-context "text.pdf" width height))
+(setf *context* (create-pdf-context "text.pdf" width height))
 ;; white background
-(set-source-rgb *context* 1 1 1)
-(paint *context*)
+(set-source-rgb 1 1 1)
+(paint)
 ;; setup font
-(select-font-face *context* "Arial" :normal :normal)
-(set-font-size *context* size)
+(select-font-face "Arial" :normal :normal)
+(set-font-size size)
 ;; starting point
-(mark-at *context* x y 2 1 0 0)		; red
+(mark-at x y 2 1 0 0)		; red
 ;; first text in a box
 (multiple-value-bind (x-bearing y-bearing text-width text-height)
-    (text-extents *context* text)
+    (text-extents text)
   (let ((rect-x (+ x x-bearing))
 	(rect-y (+ y y-bearing)))
-    (rectangle *context* rect-x rect-y text-width text-height)
-    (set-source-rgba *context* 0 0 1 0.3)		; blue
-    (set-line-width *context* 1)
-    (set-dash *context* 0 '(5 5))
-    (stroke *context*)))
-(set-source-rgba *context* 0 0 0 0.6)
-(move-to *context* x y)
-(show-text *context* text)
+    (rectangle rect-x rect-y text-width text-height)
+    (set-source-rgba 0 0 1 0.3)		; blue
+    (set-line-width 1)
+    (set-dash 0 '(5 5))
+    (stroke)))
+(set-source-rgba 0 0 0 0.6)
+(move-to x y)
+(show-text text)
 (dolist (x-align '(0 0.5 1))
   (dolist (y-align '(0 0.5 1))
-    (show-text-with-marker *context* text (+ x (* x-align 300))
+    (show-text-with-marker text (+ x (* x-align 300))
 			   (+ y (* y-align 300) 100)
 			   x-align y-align)))
 ;; done
@@ -117,26 +128,26 @@
 (defparameter density 2000)
 (setf *context* (create-pdf-context "lissajous.pdf" size size))
 ;; pastel blue background
-(rectangle *context* 0 0 width height)
-(set-source-rgb *context* 0.9 0.9 1)
-(fill-path *context*)
+(rectangle 0 0 width height)
+(set-source-rgb 0.9 0.9 1)
+(fill-path)
 ;; Lissajous curves, blue
 (labels ((stretch (x) (+ (* (1+ x) (- (/ size 2) margin)) margin)))
-  (move-to *context* (stretch (sin delta)) (stretch 0))
+  (move-to (stretch (sin delta)) (stretch 0))
   (dotimes (i density)
     (let* ((v (/ (* i pi 2) density))
 	   (x (sin (+ (* a v) delta)))
 	   (y (sin (* b v))))
-      (line-to *context* (stretch x) (stretch y)))))
-(close-path *context*)
-(set-line-width *context* .5)
-(set-source-rgb *context* 0 0 1)
-(stroke *context*)
+      (line-to (stretch x) (stretch y)))))
+(close-path)
+(set-line-width .5)
+(set-source-rgb 0 0 1)
+(stroke)
 ;; "cl-cairo2" in Arial bold to the center
-(select-font-face *context* "Arial" :normal :bold)
-(set-font-size *context* 100)
-(set-source-rgba *context* 1 0.75 0 0.5)		; orange
-(show-text-aligned *context* "cl-cairo2" (/ size 2) (/ size 2))
+(select-font-face "Arial" :normal :bold)
+(set-font-size 100)
+(set-source-rgba 1 0.75 0 0.5)		; orange
+(show-text-aligned "cl-cairo2" (/ size 2) (/ size 2) 0.5 0.5)
 ;; done
 (destroy *context*)
 
@@ -148,36 +159,36 @@
 ;;;;  Rotation, translation and scaling is achieved using the
 ;;;;  appropriate cairo functions.
 
-(defun heart (context alpha)
+(defun heart (alpha &optional (context *context*))
   "Draw a heart with fixed size and the given transparency alpha.
   Heart is upside down."
-  (let ((radius (sqrt 0.5)))
-    (move-to context 0 -2)
-    (line-to context 1 -1)
-    (arc context 0.5 -0.5 radius (deg-to-rad -45) (deg-to-rad 135))
-    (arc context -0.5 -0.5 radius (deg-to-rad 45) (deg-to-rad 215))
-    (close-path context)
-    (set-source-rgba context 1 0 0 alpha)
-    (fill-path context)))
+  (with-context (context)
+    (let ((radius (sqrt 0.5)))
+      (move-to 0 -2)
+      (line-to 1 -1)
+      (arc 0.5 -0.5 radius (deg-to-rad -45) (deg-to-rad 135))
+      (arc -0.5 -0.5 radius (deg-to-rad 45) (deg-to-rad 215))
+      (close-path)
+      (set-source-rgba 1 0 0 alpha)
+      (fill-path))))
 
 (defparameter width 1024)
 (defparameter height 768)
 (defparameter max-angle 40d0)
-;(with-png-file 
-(defparameter *context* (create-pdf-context "hearts.pdf" width height))
+(setf *context* (create-pdf-context "hearts.pdf" width height))
 ;; fill with white
-(rectangle *context* 0 0 width height)
-(set-source-rgb *context* 1 1 1)
-(fill-path *context*)
+(rectangle 0 0 width height)
+(set-source-rgb 1 1 1)
+(fill-path)
 ;; draw the hearts
 (dotimes (i 200)
   (let ((scaling (+ 5d0 (random 40d0))))
-    (reset-trans-matrix *context*)	; reset matrix
-    (translate *context* (random width) (random height)) ; move the origin
-    (scale *context* scaling scaling)		    ; scale
-    (rotate *context* (deg-to-rad (- (random (* 2 max-angle))
+    (reset-trans-matrix)	; reset matrix
+    (translate (random width) (random height)) ; move the origin
+    (scale scaling scaling)		    ; scale
+    (rotate (deg-to-rad (- (random (* 2 max-angle))
 				     max-angle 180))) ; rotate
-    (heart *context* (+ 0.1 (random 0.7)))))
+    (heart (+ 0.1 (random 0.7)))))
 (destroy *context*)
 
 ;;;;
@@ -187,7 +198,7 @@
 
 (defparameter width 100)
 (defparameter height 40)
-(defparameter *context* (create-pdf-context "pattern.pdf" width height))
+(setf *context* (create-pdf-context "pattern.pdf" width height))
 (with-linear-pattern rainbow (0 0 width 0)
     `((0   (0.7 0 0.7 0))      ;rgb(a) color as list
       (1/6 ,cl-colors:+blue+)  ;color as cl-color
@@ -196,21 +207,21 @@
       (4/6 ,cl-colors:+orange+)
       (5/6 ,cl-colors:+red+)
       (1   ,cl-colors:+violetred+))
-  (rectangle *context* 0 0 width height)
-  (set-source *context* rainbow)
-  (fill-path *context*))
+  (rectangle 0 0 width height)
+  (set-source rainbow)
+  (fill-path))
 (destroy *context*)
 
 ;;;;
 ;;;;  example for with-png-file
 ;;;;
-(with-png-file (context "simple.png" :rgb24 200 100)
+(with-png-file ("simple.png" :rgb24 200 100)
   ;; clear the whole canvas with blue
-  (set-source-rgb context 0.2 0.2 1)
-  (paint context)
+  (set-source-rgb 0.2 0.2 1)
+  (paint)
   ;; draw a white diagonal line
-  (move-to context 200 0)
-  (line-to context 0 100)
-  (set-source-rgb context 1 1 1)
-  (set-line-width context 5)
-  (stroke context))
+  (move-to 200 0)
+  (line-to 0 100)
+  (set-source-rgb 1 1 1)
+  (set-line-width 5)
+  (stroke))
