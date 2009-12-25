@@ -5,7 +5,7 @@
 
 (define-foreign-library :libX11
   (:darwin "libX11.dylib")
-  (:unix "libX11.so"))
+  (:unix (:or "libX11.so" "libX11.so.6")))
 
 (load-foreign-library :libX11)
 
