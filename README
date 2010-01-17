@@ -5,19 +5,3 @@ dvipdfm.
 The project webpage is at http://common-lisp.net/project/cl-cairo2,
 where you will find the repository, mailing lists, contact information
 etc.
-
-IMPORTANT: as of May 15, 2009, I have removed the global variable
-*context*, and made context the first argument of every function.
-There are several important reasons for this:
-
-- it conforms better to the underlying Cairo bindings
-
-- it is more Lispy
-
-- having a global variable for the default context didn't make much
-  sense in retrospect
-
-Now the context argument comes FIRST.
-
-I apologize if this inconvenienced anyone, but I had to do it
-sometime, better now than later.  Tamas

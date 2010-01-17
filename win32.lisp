@@ -47,17 +47,15 @@
 		nil
 		image-surface)))
 
-(defmacro with-win32-context ((context hwnd hdc width height 
-				       &optional (surface-name (gensym)))
-			      &body body)
-  (once-only (context)
-    `(multiple-value-bind (,surface-name ,width ,height)
-	 (win32-create-surface ,hwnd ,hdc)
-	 (let ((,context (create-context ,surface-name)))
-	   (unwind-protect (progn ,@body)
-		 (progn
-		   (destroy ,context)
-		   (destroy ,surface-name))))))
+(defmacro with-win32-context ((hwnd hdc width height &optional (surface-name (gensym)))
+							  &body body)
+  `(multiple-value-bind (,surface-name ,width ,height)
+	   (create-win32-surface ,hwnd ,hdc)
+	 (let ((*context* (create-context ,surface-name)))
+ 	   (unwind-protect (progn ,@body)
+ 		 (progn
+		   (destroy *context*)
+ 		   (destroy ,surface-name))))))
 
 ;;;
 ;;; win32 fonts

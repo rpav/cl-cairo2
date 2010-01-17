@@ -173,15 +173,13 @@
 (defparameter delta (/ pi 2))
 (defparameter density 2000)
 
-(defun show-text-aligned (text x y &optional (x-align 0.5) (y-align 0.5)
-			  (context *context*))
+(defun show-text-aligned (text x y &optional (x-align 0.5) (y-align 0.5))
   "Show text aligned relative to (x,y)."
-  (let ((*context* context))
-    (multiple-value-bind (x-bearing y-bearing width height)
-	(text-extents text)
-      (move-to (- x (* width x-align) x-bearing)
-	       (- y (* height y-align) y-bearing))
-      (show-text text))))
+  (multiple-value-bind (x-bearing y-bearing width height)
+	  (text-extents text)
+	(move-to (- x (* width x-align) x-bearing)
+			 (- y (* height y-align) y-bearing))
+	(show-text text)))
 
 (defun draw-lissajous (hwnd hdc ps)
   (declare (ignore ps))
