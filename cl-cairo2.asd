@@ -8,18 +8,32 @@
   :version "0.5"
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"
-  :components ((:file "package")
-               (:file "cairo" :depends-on ("package"))
-	       (:file "my-double" :depends-on ("package"))
-  	       (:file "cl-cairo2-swig" :depends-on ("cairo" "my-double"))
-               (:file "tables" :depends-on ("cl-cairo2-swig"))
-               (:file "surface" :depends-on ("cairo" "tables" "cl-cairo2-swig"))
-               (:file "context" :depends-on ("surface" "tables" "cl-cairo2-swig"))
-               (:file "pattern" :depends-on ("context" "surface" "tables"
-						       "cl-cairo2-swig"
-						       "transformations"))
-               (:file "path" :depends-on ("context"))
-               (:file "text" :depends-on ("context"))
-               (:file "transformations" :depends-on ("context")))
+  :serial t
+  :components
+  ((:module 
+    "package-init"
+    :pathname #P"src/"
+    :components 
+    ((:file "package")))
+   (:module
+    "foreign-interface"
+    :pathname #P"src/"
+    :serial t
+    :components 
+    ((:file "load-libraries")
+     (:file "my-double")
+     (:file "cl-cairo2-swig")))
+   (:module
+    "core-interface"
+    :pathname #P"src/"
+    :serial t
+    :components
+    ((:file "tables")
+     (:file "surface")
+     (:file "context")
+     (:file "transformations")
+     (:file "pattern")
+     (:file "path")
+     (:file "text"))))
   :depends-on (:cffi :cl-colors :cl-utilities :trivial-garbage
-		     :trivial-features))
+                     :trivial-features))
