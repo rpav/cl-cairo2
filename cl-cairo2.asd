@@ -24,7 +24,7 @@
      (:file "my-double")
      (:file "cl-cairo2-swig")))
    (:module
-    "core-interface"
+    "core"
     :pathname #P"src/"
     :serial t
     :components
@@ -34,6 +34,12 @@
      (:file "transformations")
      (:file "pattern")
      (:file "path")
-     (:file "text"))))
+     (:file "text")))
+   (:module
+    "x11"
+    :pathname #P"src/x11/"
+    :serial t
+    :components
+    ((:file "xlib-image-interface"))))
   :depends-on (:cffi :cl-colors :cl-utilities :trivial-garbage
                      :trivial-features))

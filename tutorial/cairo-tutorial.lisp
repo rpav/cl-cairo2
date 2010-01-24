@@ -11,18 +11,18 @@
 (defpackage :cairo-tutorial
   (:use :cl :cl-cairo2)
   (:export :stroke-example
-		   :fill-example
-		   :show-text-example
-		   :paint-example
-		   :mask-example
-		   :preparing-and-selecting-source-example
-		   :preparing-and-selecting-source2-example
-		   :path-example
-		   :text-example
-		   :line-width1-example
-		   :line-width2-example
-		   :text-alignment-example
-		   :run-all-examples))
+           :fill-example
+           :show-text-example
+           :paint-example
+           :mask-example
+           :preparing-and-selecting-source-example
+           :preparing-and-selecting-source2-example
+           :path-example
+           :text-example
+           :line-width1-example
+           :line-width2-example
+           :text-alignment-example
+           :run-all-examples))
 
 (in-package :cairo-tutorial)
 

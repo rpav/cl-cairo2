@@ -9,9 +9,20 @@
   :author "Tamas K Papp"
   :license "GPL"
   :serial t
-  :components ((:file "cl-cairo2-x11-swig")
-	       (:file "libraries-x11" :depends-on ("cl-cairo2-x11-swig"))
-	       (:file "xlib" :depends-on ("libraries-x11"))
-	       (:file "xlib-image-context" :depends-on ("xlib"))
-	       (:file "gtk-context" :depends-on ("libraries-x11")))
+  :components
+  ((:module
+    "foreign-interface"
+    :pathname #P"src/x11/"
+    :serial t
+    :components
+    ((:file "cl-cairo2-x11-swig")
+     (:file "load-libraries-x11")
+     (:file "xlib")))
+   (:module
+    "core"
+    :pathname #P"src/x11/"
+    :serial t
+    :components
+    ((:file "xlib-image-context")
+     (:file "gtk-context"))))
   :depends-on (:cl-cairo2))

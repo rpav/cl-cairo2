@@ -28,18 +28,6 @@
   (width :int)
   (height :int))
 
-(defclass xlib-image-context (context)
-  ((display :initarg :display)
-   (background-color :initarg :background-color)
-   window graphics-context signal-window
-   (xlib-context :accessor xlib-context)
-   wm-delete-window
-   (width :initarg :width)
-   (height :initarg :height)
-   thread 
-   (sync-counter :initform 0 :accessor sync-counter)))
-  
-
 ;; synchronization after drawing
 
 (defun send-message-to-signal-window (xlib-image-context message)
