@@ -6,7 +6,7 @@
 (defsystem cl-cairo2
   :description "Cairo 1.6 bindings"
   :version "0.5"
-  :author "Tamas K Papp"
+  :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"
   :components ((:file "package")
                (:file "cairo" :depends-on ("package"))

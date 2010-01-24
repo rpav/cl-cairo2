@@ -30,6 +30,7 @@
 
 (defclass xlib-image-context (context)
   ((display :initarg :display)
+   (background-color :initarg :background-color)
    window graphics-context signal-window
    (xlib-context :accessor xlib-context)
    wm-delete-window
@@ -92,7 +93,8 @@ background-color is not nil, the window will be painted with it."
 					     :display display
 					     :width width
 					     :height height
-					     :pixel-based-p t)))
+					     :pixel-based-p t
+                                             :background-color background-color)))
       (labels (;; Repaint the xlib context with the image surface
 	       ;; (previously set as source during initialization.
 	       (refresh ()
