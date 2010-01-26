@@ -1,17 +1,15 @@
 (in-package :cl-cairo2)
 
-;; is this really needed? OS should set this up properly
-#+darwin (pushnew "/usr/local/lib/" *foreign-library-directories*)
-#+darwin (pushnew "/opt/local/lib/" *foreign-library-directories*)
-
-;;;; The library search order should look like below because on Mac both
+;;;; Loading Cairo library - you are supposed to set it up on the path where
+;;;; the system's library loader looks up.
+;;;; Also, the library search order should look like below because on Mac both
 ;;;; 'darwin' and 'unix' are defined in *feature* and we want to load .dylib
 ;;;; version of library.
 
 (define-foreign-library :libcairo
-	(cffi-features:darwin	"libcairo.dylib")
-  	(cffi-features:unix (:or "libcairo.so.2" "libcairo.so"))
-	(cffi-features:windows	"libcairo-2.dll"))
+  (cffi-features:darwin	"libcairo.dylib")
+  (cffi-features:unix (:or "libcairo.so.2" "libcairo.so"))
+  (cffi-features:windows "libcairo-2.dll"))
 	 
 (load-foreign-library :libcairo)
 
