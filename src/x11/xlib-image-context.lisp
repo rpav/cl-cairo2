@@ -28,17 +28,6 @@
   (width :int)
   (height :int))
 
-(defclass xlib-image-context (context)
-  ((display :initarg :display)
-   window graphics-context signal-window
-   (xlib-context :accessor xlib-context)
-   wm-delete-window
-   (width :initarg :width)
-   (height :initarg :height)
-   thread 
-   (sync-counter :initform 0 :accessor sync-counter)))
-  
-
 ;; synchronization after drawing
 
 (defun send-message-to-signal-window (xlib-image-context message)
@@ -92,7 +81,8 @@ background-color is not nil, the window will be painted with it."
 					     :display display
 					     :width width
 					     :height height
-					     :pixel-based-p t)))
+					     :pixel-based-p t
+                                             :background-color background-color)))
       (labels (;; Repaint the xlib context with the image surface
 	       ;; (previously set as source during initialization.
 	       (refresh ()

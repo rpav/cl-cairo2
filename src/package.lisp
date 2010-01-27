@@ -71,5 +71,11 @@
    trans-matrix-init-translate trans-matrix-init-scale
    trans-matrix-init-rotate trans-matrix-rotate trans-matrix-scale
    trans-matrix-rotate trans-matrix-invert trans-matrix-multiply
-   trans-matrix-distance transform-point)
+   trans-matrix-distance transform-point
+
+   ;; x11/xlib-image-interface
+
+   xlib-image-context
+
+   )
   (:nicknames :cairo))

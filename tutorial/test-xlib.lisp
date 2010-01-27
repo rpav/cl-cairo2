@@ -1,3 +1,6 @@
+;;;;  This is the old X11 interface -- it is now DEPRECATED.  Use
+;;;;  create-xlib-image-context instead.
+
 (in-package :cl-cairo2)
 
 (defun random-size ()
