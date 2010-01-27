@@ -38,10 +38,7 @@
 		(error "~A (see *png-dir*) doesn't exist" pngdir))))
 
 (defmacro argb-to-argb32 (a r g b)
-  #+(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
-  `(logior (ash ,a 24) (ash ,r 16) (ash ,g 8) ,b)
-  #-(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
-  (error "no implemented"))
+  `(logior (ash ,a 24) (ash ,r 16) (ash ,g 8) ,b))
 
 (defmacro write-argb32 (sap idx argb32)
   #+sbcl
@@ -55,13 +52,10 @@
   `(write-argb32 ,sap ,idx (argb-to-argb32 ,a ,r ,g ,b)))
 
 (defmacro argb-from-argb32 (argb32)
-  #+(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
   `(values (logand #xff (ash ,argb32 -24))
 		   (logand #xff (ash ,argb32 -16))
 		   (logand #xff (ash ,argb32 -8))
-		   (logand #xff ,argb32))
-  #-(or (and sbcl (or x86 ppc)) (and ccl 32-bit-host little-endian-host))
-  (error "not implemented"))
+		   (logand #xff ,argb32)))
 
 (defmacro read-argb32 (sap idx)
   #+sbcl
@@ -88,7 +82,7 @@
 		(when (eq b -1)
 		  (setf b 0))))
   (let ((width 256) (height 256))
-	(with-png-file ((png-pathname-string "demo1") :argb32 width height argbsf)
+	(with-png-file ((png-pathname-string "demo1") :argb32 width height :surface argbsf)
 	  (let ((sfwidth	(image-surface-get-width	argbsf))
 			(sfheight	(image-surface-get-height	argbsf))
 			(sfbpr		(image-surface-get-stride	argbsf))
@@ -125,7 +119,7 @@
 	  ;;
 	  (let ((dstwidth	(* srcwidth zoomw))
 			(dstheight	(* srcheight zoomh)))
-		(with-png-file ((png-pathname-string "demo2") :argb32 dstwidth dstheight dstsf)
+		(with-png-file ((png-pathname-string "demo2") :argb32 dstwidth dstheight :surface dstsf)
 		  (let ((dstbpr		(image-surface-get-stride	dstsf))
 				(dst-data	(image-surface-get-data		dstsf :pointer-only t))
 				(bpp 4))

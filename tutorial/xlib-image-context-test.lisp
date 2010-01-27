@@ -11,7 +11,7 @@
        (depth (xdefaultdepth display screen)))
   depth)
 
-(with-foreign-slots ((width height format data
+#|(with-foreign-slots ((width height format data
 			    byte-order bitmap-unit
 			    bitmap-bit-order bitmap-pad
 			    depth bytes-per-line
@@ -24,4 +24,4 @@
 	  depth bytes-per-line
 	  bits-per-pixel red-mask
 	  green-mask blue-mask
-	  xoffset))
+	  xoffset))|#

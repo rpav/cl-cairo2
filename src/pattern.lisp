@@ -119,6 +119,7 @@
   (:documentation "add a color stop to the pattern. color must be of class rgb, rgba or a list (r g b) or (r g b a)"))
 
 (defmethod pattern-add-color-stop :around ((pattern pattern) offset color)
+  (declare (ignore offset color))
   (if (member (pattern-get-type pattern) '(:linear :radial))
     (call-next-method)
     (error "cannot add a color stop to this pattern type")))

@@ -141,7 +141,6 @@
 (cffi:defcfun ("cairo_quartz_font_face_create_for_cgfont" cairo_quartz_font_face_create_for_cgfont) :pointer
   (font :pointer))
 
+#-x86-64
 (cffi:defcfun ("cairo_quartz_font_face_create_for_atsu_font_id" cairo_quartz_font_face_create_for_atsu_font_id) :pointer
   (font_id :pointer))
-
-

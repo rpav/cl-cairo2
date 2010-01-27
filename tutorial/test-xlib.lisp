@@ -1,6 +1,3 @@
-;;;;  This is the old X11 interface -- it is now DEPRECATED.  Use
-;;;;  create-xlib-image-context instead.
-
 (in-package :cl-cairo2)
 
 (defun random-size ()
@@ -9,8 +6,8 @@
 (defparameter *max-number-of-contexts* 50)
 
 (defun x-on-window (context)
-  (let ((width (get-width context))
-	(height (get-height context)))
+  (let ((width (image-surface-get-width context))
+        (height (image-surface-get-height context)))
     ;; clear
     (rectangle 0 0 width height context)
     (set-source-color +white+ context)
@@ -46,9 +43,10 @@
   (setf *list-of-contexts* (remove-random-window *list-of-contexts*)))
 
 
-(defparameter *c1* (create-xlib-context 100 100))
+(defparameter *c1* (create-xlib-image-context 100 100))
 (x-on-window *c1*)
-(defparameter *c2* (create-xlib-context 140 200))
+(defparameter *c2* (create-xlib-image-context 140 200))
 (x-on-window *c2*)
 
 (destroy *c1*)
+(destroy *c2*)
