@@ -9,6 +9,13 @@
   :version "0.1"
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"
-  :components ((:file "cl-cairo2-win-swig")
-	       (:file "win32" :depends-on ("cl-cairo2-win-swig")))
+  :serial t
+  :components
+  ((:module
+    "Win32 surface"
+    :pathname #P"src/"
+    :serial t
+    :components
+    ((:file "cl-cairo2-win-swig")
+     (:file "win32"))))
   :depends-on (:cl-cairo2))
