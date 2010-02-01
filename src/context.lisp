@@ -316,3 +316,13 @@ destroy the context when done."
 (define-create-context ps)
 (define-create-context pdf)
 (define-create-context svg)
+
+;;;;
+;;;; a help macro for deprecating fns with define-compiler-macro
+;;;;
+
+(defmacro deprecate (oldfn newfn &rest args)
+  (format *error-output* "~&WARNING: ~A is deprecated. Use ~A instead.~%" oldfn newfn)
+  (if (< 0 (length args))
+      `(,newfn ,@args)
+      `(,newfn)))
