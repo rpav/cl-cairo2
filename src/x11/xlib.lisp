@@ -63,13 +63,13 @@ the power value."
 
 
 ;;;; error code handling
-(defmacro check-status (call)
-  "Check the return calue of call, if nonzero, display an error message."
+(defmacro check-zero-status (call)
+  "Check the return calue of call, if zero, display an error message."
   (with-unique-names (status)
   `(let ((,status ,call))
      (if (zerop ,status)
-	 (values)
-	 (error "operations ~a returned status (error) ~a" ',call ,status)))))
+	 (error "operations ~a returned status (error) ~a" ',call ,status)
+	 (values)))))
 
 ;;;; display operations
 
