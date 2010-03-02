@@ -36,8 +36,8 @@
      (:file "path")
      (:file "text")))
    (:module
-    "x11"
-    :pathname #P"src/x11/"
+    "xlib"
+    :pathname #P"src/xlib/"
     :serial t
     :components
     ((:file "xlib-image-interface"))))

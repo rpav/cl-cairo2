@@ -7,14 +7,14 @@ CAIRO_INCLUDE_FILES=$(wildcard $(CAIRO_INCLUDE_DIR)/*.h)
 cl-cairo2-swig.lisp: cl-cairo2.i common.i $(CAIRO_INCLUDE_FILES)
 	swig -cffi -I$(CAIRO_INCLUDE_DIR) -DCOMMON cl-cairo2.i
 
-cl-cairo2-x11-swig.lisp: cl-cairo2-x11.i common.i $(CAIRO_INCLUDE_FILES)
-	swig -cffi -I$(CAIRO_INCLUDE_DIR) cl-cairo2-x11.i
+cl-cairo2-xlib-swig.lisp: cl-cairo2-xlib.i common.i $(CAIRO_INCLUDE_FILES)
+	swig -cffi -I$(CAIRO_INCLUDE_DIR) cl-cairo2-xlib.i
 
-cl-cairo2-mac-swig.lisp: cl-cairo2-mac.i common.i $(CAIRO_INCLUDE_FILES)
-	swig -cffi -I$(CAIRO_INCLUDE_DIR) cl-cairo2-mac.i
+cl-cairo2-quartz-swig.lisp: cl-cairo2-quartz.i common.i $(CAIRO_INCLUDE_FILES)
+	swig -cffi -I$(CAIRO_INCLUDE_DIR) cl-cairo2-quartz.i
 
-cl-cairo2-win-swig.lisp: cl-cairo2-win.i common.i $(CAIRO_INCLUDE_FILES)
-	swig -cffi -I$(CAIRO_INCLUDE_DIR) cl-cairo2-win.i
+cl-cairo2-win32-swig.lisp: cl-cairo2-win32.i common.i $(CAIRO_INCLUDE_FILES)
+	swig -cffi -I$(CAIRO_INCLUDE_DIR) cl-cairo2-win32.i
 	sed 's/^M//' $@ >$@.tmp; mv -f $@.tmp $@
 
 # test-swig.lisp: test.i

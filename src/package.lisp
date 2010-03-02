@@ -73,7 +73,7 @@
    trans-matrix-rotate trans-matrix-invert trans-matrix-multiply
    trans-matrix-distance transform-point
 
-   ;; x11/xlib-image-interface
+   ;; xlib/xlib-image-interface
 
    xlib-image-context
 
