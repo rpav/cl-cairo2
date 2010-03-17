@@ -3,7 +3,7 @@
 
 (in-package #:cl-cairo2-xlib-asd)
 
-(defsystem cl-cairo2-x11
+(defsystem cl-cairo2-xlib
   :description "Cairo 1.6 bindings, xlib surface and GTK extension"
   :version "0.1"
   :author "Tamas K Papp"
