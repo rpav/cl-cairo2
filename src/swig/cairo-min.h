@@ -22,6 +22,7 @@
 # endif
 #endif
 
+#ifdef CL_CAIRO2_USING_CORE
 typedef enum _cairo_format {
     CAIRO_FORMAT_ARGB32,
     CAIRO_FORMAT_RGB24,
@@ -32,6 +33,14 @@ typedef enum _cairo_format {
 CAIRO_FORMAT_RGB16_565 = 4,
 */
 } cairo_format_t;
+#else
+typedef int cairo_format_t;
+#endif
 
-typedef void* HFONT;
+#ifdef CL_CAIRO2_USING_QUARTZ
 typedef unsigned int ATSUFontID;
+#endif
+
+#ifdef CL_CAIRO2_USING_WIN32
+typedef void* HFONT;
+#endif

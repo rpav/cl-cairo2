@@ -8,17 +8,13 @@
 
 
 
+(cl:defconstant CL_CAIRO2_USING_XLIB 1)
+
 (cl:defconstant CAIRO_HAS_XLIB_XRENDER_SURFACE 1)
 
 (cl:defconstant CAIRO_HAS_XLIB_SURFACE 1)
 
 (cl:defconstant CAIRO_HAS_FT_FONT 1)
-
-(cffi:defcenum cairo_format_t
-	:CAIRO_FORMAT_ARGB32
-	:CAIRO_FORMAT_RGB24
-	:CAIRO_FORMAT_A8
-	:CAIRO_FORMAT_A1)
 
 (cffi:defcfun ("cairo_xlib_surface_create_with_xrender_format" cairo_xlib_surface_create_with_xrender_format) :pointer
   (dpy :pointer)

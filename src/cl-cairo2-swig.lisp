@@ -77,6 +77,8 @@
 ;;;SWIG wrapper code ends here
 
 
+(cl:defconstant CL_CAIRO2_USING_CORE 1)
+
 (cl:defconstant CAIRO_HAS_IMAGE_SURFACE 1)
 
 (cl:defconstant CAIRO_HAS_PNG_FUNCTIONS 1)

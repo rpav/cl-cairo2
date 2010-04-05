@@ -16,14 +16,8 @@
 
 (cl:defconstant __LP64__ 1)
 
-(cffi:defcenum cairo_format_t
-	:CAIRO_FORMAT_ARGB32
-	:CAIRO_FORMAT_RGB24
-	:CAIRO_FORMAT_A8
-	:CAIRO_FORMAT_A1)
-
 (cffi:defcfun ("cairo_quartz_surface_create" cairo_quartz_surface_create) :pointer
-  (format cairo_format_t)
+  (format :int)
   (width :unsigned-int)
   (height :unsigned-int))
 

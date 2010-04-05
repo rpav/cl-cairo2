@@ -8,17 +8,11 @@
 
 
 
+(cl:defconstant CL_CAIRO2_USING_WIN32 1)
+
 (cl:defconstant CAIRO_HAS_WIN32_SURFACE 1)
 
 (cl:defconstant CAIRO_HAS_WIN32_FONT 1)
-
-(cl:defconstant CL_CAIRO2_USING_CAIRO_WIN32 1)
-
-(cffi:defcenum cairo_format_t
-	:CAIRO_FORMAT_ARGB32
-	:CAIRO_FORMAT_RGB24
-	:CAIRO_FORMAT_A8
-	:CAIRO_FORMAT_A1)
 
 (cffi:defcfun ("cairo_win32_surface_create" cairo_win32_surface_create) :pointer
   (hdc :pointer))
@@ -28,12 +22,12 @@
 
 (cffi:defcfun ("cairo_win32_surface_create_with_ddb" cairo_win32_surface_create_with_ddb) :pointer
   (hdc :pointer)
-  (format cairo_format_t)
+  (format :int)
   (width :int)
   (height :int))
 
 (cffi:defcfun ("cairo_win32_surface_create_with_dib" cairo_win32_surface_create_with_dib) :pointer
-  (format cairo_format_t)
+  (format :int)
   (width :int)
   (height :int))
 
