@@ -8,10 +8,3 @@ Libcairo-2.dll
 ==============
 
 Build from the 1.6.4 release snapshot on the MinGW system.
-
-
-Swig Used to Generate cl-cairo2-win-swig.lisp
-=============================================
-
-version: 1.3.36
-A build from the platform-independent source on the MinGW system, not Swigwin.

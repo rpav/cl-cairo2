@@ -1,0 +1,8 @@
+#ifndef CAIRO_FEATURES_H
+#define CAIRO_FEATURES_H
+#define CL_CAIRO2_USING_WIN32 1
+
+#define CAIRO_HAS_WIN32_SURFACE 1
+#define CAIRO_HAS_WIN32_FONT 1
+
+#endif

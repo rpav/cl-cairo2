@@ -1,8 +1,10 @@
 %module "cl-cairo2-quartz-swig"
 
-%include "common.i"
+%insert("lisphead") %{
+(in-package :cl-cairo2)
+%}
 
 %include "cairo-features.h"
-%include "cairo-ft.h"
-%include "cairo-xlib-xrender.h"
+%include "cairo-custom-features.h"
+%include "cairo-min.h"
 %include "cairo-quartz.h"

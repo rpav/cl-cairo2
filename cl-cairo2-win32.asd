@@ -5,7 +5,7 @@
 (in-package #:cl-cairo2-win32-asd)
 
 (defsystem cl-cairo2-win32
-  :description "Cairo 1.6 bindings, win32 surface"
+  :description "Cairo 1.8 bindings, win32 surface"
   :version "0.1"
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"

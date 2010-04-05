@@ -5,7 +5,7 @@
 (in-package #:cl-cairo2-quartz-asd)
 
 (defsystem cl-cairo2-quartz
-  :description "Cairo 1.6 bindings, Quartz(not yet) plus xlib surfaces and GTK extension"
+  :description "Cairo 1.8 bindings, Quartz(not yet) plus xlib surfaces and GTK extension"
   :version "0.1"
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"

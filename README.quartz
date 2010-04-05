@@ -3,22 +3,11 @@ Note: binding for Quartz surface is not available yet.
 Tested Environments
 ===================
 
-Mac OS X 10.5.4: SBCL_1.0.16, libciaro_1.6.4, libpng_1.2.29, zlib_1.2.3
+Mac OS X 10.6.3: SBCL_1.0.35, libcairo_1.8.8, libpng_1.2.42, zlib_1.2.3
 
 
 libcairo.dylib
 ==============
 
-Build from the 1.6.4 release snapshot with the following option enabled at
-./configure time:
-  --enable-quartz-image
-
-The latest MacPorts build of libcairo (1.6.4 at this time) has an issue with
-cl-cairo2 (e.g. cairo_show_text returns STATUS_NO_MEMORY).
-
-
-Swig Used to Generate cl-cairo2-mac-swig.lisp
-=============================================
-
-MacPorts Swig, version 1.3.36
-
+MacPorts build of libcairo has some issue with cl-cairo2,
+e.g. cairo_show_text returns STATUS_NO_MEMORY.

@@ -4,7 +4,7 @@
 (in-package #:cl-cairo2-xlib-asd)
 
 (defsystem cl-cairo2-xlib
-  :description "Cairo 1.6 bindings, xlib surface and GTK extension"
+  :description "Cairo 1.8 bindings, xlib surface and GTK extension"
   :version "0.1"
   :author "Tamas K Papp"
   :license "GPL"

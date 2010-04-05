@@ -4,7 +4,7 @@
 (in-package #:cl-cairo2-asd)
 
 (defsystem cl-cairo2
-  :description "Cairo 1.6 bindings"
+  :description "Cairo 1.8 bindings"
   :version "0.5"
   :author "Tamas K Papp, Kei Suzuki"
   :license "GPL"
