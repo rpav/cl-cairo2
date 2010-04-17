@@ -40,6 +40,12 @@
     :pathname #P"src/xlib/"
     :serial t
     :components
-    ((:file "xlib-image-interface"))))
+    ((:file "xlib-image-interface")))
+   (:module
+    "gtk2"
+    :pathname #P"src/gtk2/"
+    :serial t
+    :components
+    ((:file "gtk2-interface"))))
   :depends-on (:cffi :cl-colors :cl-utilities :trivial-garbage
                      :trivial-features))

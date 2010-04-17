@@ -77,5 +77,9 @@
 
    xlib-image-context
 
+   ;; gtk2/gtk2-interface
+
+   gtk2-xlib-context
+
    )
   (:nicknames :cairo))
