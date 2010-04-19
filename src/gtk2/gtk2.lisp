@@ -56,6 +56,9 @@
                    :title title
                    :default-width width
                    :default-height height
+                   :width-request width
+                   :height-request height
+                   :resizable nil
                    :type :toplevel
                    (gtk:v-box
                     (cairo-drawing-area :var cairo-drawing-area)))
