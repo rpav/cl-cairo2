@@ -29,12 +29,6 @@
                (when (zerop sync-counter)
                  (repaint-drawing-area cairo-drawing-area)))))
 
-(defmethod sync ((object gtk2-xlib-context))
-           (gtk:within-main-loop
-             (with-slots (sync-counter cairo-drawing-area) object
-               (when (zerop sync-counter)
-                 (repaint-drawing-area cairo-drawing-area)))))
-
 (defmethod sync-lock ((object gtk2-xlib-context))
   (incf (sync-counter object)))
 
@@ -48,7 +42,7 @@
   (setf (sync-counter object) 0)
   (sync object))
 
-(defun create-gtk2-xlib-context (width height &key (title "title") (background-color +white+))
+(defun create-gtk2-xlib-context (width height &key (title "gtk2") (background-color +white+))
   (let (context)
     (gtk:within-main-loop
       (gtk:let-ui (gtk:gtk-window 
