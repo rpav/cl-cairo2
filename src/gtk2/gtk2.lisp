@@ -17,17 +17,19 @@
            (gobject:connect-signal w "configure-event"
                                    (lambda (widget event)
                                      (declare (ignore event))
-                                     (repaint-drawing-area widget)))
+                                     (repaint-drawing-area widget)
+                                     t))
            (gobject:connect-signal w "expose-event"
                                    (lambda (widget event)
                                      (declare (ignore event))
-                                     (repaint-drawing-area widget))))
+                                     (repaint-drawing-area widget)
+                                     t)))
 
 (defmethod sync ((object gtk2-xlib-context))
-           (gtk:within-main-loop
-             (with-slots (sync-counter cairo-drawing-area) object
-               (when (zerop sync-counter)
-                 (repaint-drawing-area cairo-drawing-area)))))
+  (gtk:within-main-loop
+    (with-slots (sync-counter cairo-drawing-area) object
+      (when (zerop sync-counter)
+        (gtk:widget-queue-draw cairo-drawing-area)))))
 
 (defmethod sync-lock ((object gtk2-xlib-context))
   (incf (sync-counter object)))
@@ -44,7 +46,7 @@
 
 (defun create-gtk2-xlib-context (width height &key (title "gtk2") (background-color +white+))
   (let (context)
-    (gtk:within-main-loop
+    (gtk:within-main-loop-and-wait ; important to wait until it finishes
       (gtk:let-ui (gtk:gtk-window 
                    :var window
                    :title title
@@ -78,7 +80,6 @@
             (paint context))
           ;; show window
           (gtk:widget-show window))))
-    (loop until context)                ; wait until main loop is done
     context))
 
 (export 'create-gtk2-xlib-context)
