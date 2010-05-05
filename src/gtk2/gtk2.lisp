@@ -8,22 +8,21 @@
     (:metaclass gobject:gobject-class)))
 
 (defun repaint-drawing-area (widget)
-  (cl-gtk2-cairo:with-gdk-context (target-context (gtk:widget-window widget))
-    (set-source-surface (source-surface widget) 0 0 target-context)
-    (paint target-context)))
+  (gtk:within-main-loop
+    (cl-gtk2-cairo:with-gdk-context (target-context (gtk:widget-window widget))
+      (set-source-surface (source-surface widget) 0 0 target-context)
+      (paint target-context))))
 
 (defmethod initialize-instance :after ((w cairo-drawing-area) &rest initargs)
            (declare (ignore initargs))
            (gobject:connect-signal w "configure-event"
                                    (lambda (widget event)
                                      (declare (ignore event))
-                                     (repaint-drawing-area widget)
-                                     t))
+                                     (repaint-drawing-area widget)))
            (gobject:connect-signal w "expose-event"
                                    (lambda (widget event)
                                      (declare (ignore event))
-                                     (repaint-drawing-area widget)
-                                     t)))
+                                     (repaint-drawing-area widget))))
 
 (defmethod sync ((object gtk2-xlib-context))
   (gtk:within-main-loop
@@ -77,7 +76,7 @@
           ;; paint if background color is given
           (when background-color
             (set-source-color background-color context)
-            (paint context))
+            (cairo_paint (get-pointer context))) ; avoid calling sync
           ;; show window
           (gtk:widget-show window))))
     context))
