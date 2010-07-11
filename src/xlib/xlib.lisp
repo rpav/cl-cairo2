@@ -232,7 +232,8 @@ the power value."
 		      
 ;; synchronization & threads 
 
-(defcfun ("XInitThreads" xinitthreads) :int)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defcfun ("XInitThreads" xinitthreads) :int))
 
 (defcfun ("XLockDisplay" xlockdisplay) :int
   (display display))
@@ -429,8 +430,16 @@ the power value."
 
 ;; call xinitthreads
 
-(xinitthreads)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *xinitthreads-called?* nil)
+  (defun call-xinitthreads ()
+    (unless *xinitthreads-called?*
+      (xinitthreads)
+      (setf *xinitthreads-called?* t))))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (call-xinitthreads))
 
 ;; various higher level functions
 
