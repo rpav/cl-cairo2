@@ -48,4 +48,4 @@
     :components
     ((:file "gtk2-interface"))))
   :depends-on (:cffi :cl-colors :cl-utilities :trivial-garbage
-                     :trivial-features))
+                     :trivial-features :metabang-bind))

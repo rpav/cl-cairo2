@@ -1,7 +1,7 @@
 (in-package #:cl-cairo2-asd)
 
 (defpackage cl-cairo2
-  (:use :common-lisp :cffi :cl-colors :cl-utilities)
+  (:use :common-lisp :cffi :cl-colors :cl-utilities :metabang-bind)
   (:nicknames :cairo)
   (:export
 
@@ -33,7 +33,7 @@
    fill-extents in-fill in-stoke create-ps-context create-pdf-context
    create-svg-context get-target set-source-surface
 
-   ;;pattern
+   ;; pattern
    
    pattern create-rgb-pattern create-rgba-pattern
    create-linear-pattern create-radial-pattern
