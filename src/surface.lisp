@@ -76,7 +76,7 @@
 ;;;;
 
 
-(defclass surface (cairo-object) 
+(defclass surface (cairo-object)
   ((width :initarg :width :reader width)
    (height :initarg :height :reader height)
    (pixel-based-p :initarg :pixel-based-p :reader pixel-based-p)))
@@ -150,6 +150,48 @@
 										width height stride)
    width height t))
 
+(defun create-image-surface-for-array (data)
+  "Create a cairo image surface from DATA. The dimensions and color
+format of the created surface are determined based on the shaped of
+DATA:
++ WxH   -> BW
++ WxHx3 -> RGB
++ WxHx4 -> ARGB"
+  ;; Make sure we can interpret DATA based on its shape.
+  (check-type data (or (array t (* *))
+		       (array t (* * 3))
+		       (array t (* * 4))))
+
+  (let* ((format (cond
+		   ((typep data '(array t (* *)))
+		    :a8)
+		   ((typep data '(array t (* * 3)))
+		    :rgb24)))
+	 (epp    (cond
+		   ((typep data '(array t (* *)))
+		    1)
+		   ((typep data '(array t (* * 3)))
+		    3)))
+	 (format (lookup-enum format table-format))
+	 (height (array-dimension data 0))
+	 (width  (array-dimension data 1))
+	 (stride (cairo_format_stride_for_width format width))
+	 (size   (* stride height))
+	 (buffer (cffi:foreign-alloc :unsigned-char
+				     :count size)))
+    (dotimes (i height)
+      (let ((row (make-array (* width epp)
+			     :displaced-to           data
+			     :displaced-index-offset (* i width epp)))
+	    (offset (* stride i)))
+	(dotimes (j (* width epp))
+	  (setf (mem-aref buffer :unsigned-char offset) (aref row j))
+	  (incf offset (if (and (= epp 3) (zerop (mod (1+ j) epp))) 2 1))))) ;; TODO slow
+    (new-surface-with-check
+     (cairo_image_surface_create_for_data
+      buffer format width height stride)
+     width height t)))
+
 (defun get-bytes-per-pixel (format)
   (case format
     (format-argb32 4)
@@ -196,7 +238,7 @@ Otherwise, return the copy of the image data along with the pointer."
 ;;;;
 
 (defun image-surface-create-from-png (filename)
-  (let ((surface 
+  (let ((surface
 	 (new-surface-with-check (cairo_image_surface_create_from_png filename)
 				 0 0)))
     (with-slots (width height) surface
