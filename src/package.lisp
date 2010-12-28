@@ -18,6 +18,8 @@
    image-surface-get-format image-surface-get-width
    image-surface-get-height image-surface-get-data
    image-surface-get-stride image-surface-create-from-png
+   image-surface-create-from-png-callback
+   image-surface-create-from-png-stream
    surface-write-to-png with-png-surface
 
    ;; context

@@ -246,6 +246,48 @@ Otherwise, return the copy of the image data along with the pointer."
 	    height (image-surface-get-height surface))
       surface)))
 
+(declaim (special *read-callback*))
+
+(defvar *read-callback* nil
+  "Stores callback functions to be called from
+cairo_image_surface_create_from_png_stream.")
+
+(cffi:defcallback read-function cairo_status_t
+    ((closure :pointer)
+     (data    (:pointer :unsigned-char))
+     (length  :unsigned-int))
+  (let ((length (convert-from-foreign length :unsigned-int))
+	(read   (funcall *read-callback* length)))
+    (dotimes (i length)
+      (setf (cffi:mem-aref data :unsigned-char i) (aref read i))))
+  :CAIRO_STATUS_SUCCESS)
+
+(defun image-surface-create-from-png-callback (callback)
+  "Construct a cairo image surface by repeatedly calling CALLBACK
+retrieving one chunk of PNG data at a time. CALLBACK should take a
+single argument which is the amount of data that to be retrieved."
+  ;; This implementation is a bit hackish: We do not use the closure
+  ;; pointer provided in the cairo api, but store the callback in the
+  ;; special variable *read-callback*.
+  (let* ((*read-callback* callback)
+	 (surface	  (new-surface-with-check
+			   (with-foreign-object (closure :pointer)
+			     (cairo_image_surface_create_from_png_stream
+			      (cffi:callback read-function) closure))
+			   0 0)))
+    (with-slots (width height) surface
+      (setf width (image-surface-get-width surface)
+	    height (image-surface-get-height surface))
+     surface)))
+
+(defun image-surface-create-from-png-stream (stream)
+  "Construct a cairo image surface by reading PNG data from STREAM."
+  (flet ((read-chunk (size)
+	   (let ((buffer (make-array size :element-type 'unsigned-byte)))
+	     (read-sequence buffer stream)
+	     buffer)))
+    (image-surface-create-from-png-stream #'read-chunk)))
+
 (defun surface-write-to-png (surface filename)
   (with-cairo-object (surface pointer)
 	(let ((status (cairo_surface_write_to_png pointer filename)))
