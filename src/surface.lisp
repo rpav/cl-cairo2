@@ -152,9 +152,9 @@
 
 (defun get-bytes-per-pixel (format)
   (case format
-    (format-argb32 4)
-    (format-rgb24 3)
-    (format-a8 1)
+    (:argb32 4)
+    (:rgb24 3)
+    (:a8 1)
     (otherwise (error (format nil "unknown format: ~a" format))))) ;todo: how does format-a1 fit in here?
 
 (defun image-surface-get-data (surface &key (pointer-only nil))
