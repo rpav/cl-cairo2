@@ -89,7 +89,7 @@
     (lookup-cairo-enum (cairo_surface_status (get-pointer surface)) table-status)))
 
 
-(defun new-surface-with-check (pointer width height &optional (pixel-based-p nil))
+ (defun new-surface-with-check (pointer width height &optional (pixel-based-p nil))
   "Check if the creation of new surface was successful, if so, return new class."
   (let ((surface (make-instance 'surface :width width :height height
 				:pixel-based-p pixel-based-p)))
@@ -153,7 +153,7 @@
 (defun get-bytes-per-pixel (format)
   (case format
     (:argb32 4)
-    (:rgb24 3)
+    (:rgb24 4)
     (:a8 1)
     (otherwise (error (format nil "unknown format: ~a" format))))) ;todo: how does format-a1 fit in here?
 
