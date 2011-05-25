@@ -96,7 +96,8 @@
     (with-checked-status surface
       (setf (slot-value surface 'pointer) pointer)
       ;; register finalizer
-      (tg:finalize surface #'(lambda () (lowlevel-destroy surface)))
+      ;; See CREATE-CONTEXT for why (lowlevel-destroy object) cannot be used here
+      (tg:finalize surface #'(lambda () (cairo_surface_destroy pointer)))
       ;; return surface
       surface)))
 
