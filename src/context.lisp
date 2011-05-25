@@ -221,7 +221,7 @@ nonlocal exits."
   "Obtain the target surface of a given context.  Width and height
 will be nil, as cairo can't provide that in general."
   (new-surface-with-check (cairo_get_target (slot-value context 'pointer))
-			  nil nil))
+			  nil nil nil t))
 
 ;;;;
 ;;;; set colors using the cl-colors library
