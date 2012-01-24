@@ -89,14 +89,18 @@
     (lookup-cairo-enum (cairo_surface_status (get-pointer surface)) table-status)))
 
 
-(defun new-surface-with-check (pointer width height &optional (pixel-based-p nil))
-  "Check if the creation of new surface was successful, if so, return new class."
+(defun new-surface-with-check (pointer width height &optional (pixel-based-p nil) (needs-ref nil))
+  "Check if the creation of new surface was successful, if so, return new class.
+Optional NEEDS-REF parameter specifies the surface is owned by the foreign side
+and needs to be referenced before use."
   (let ((surface (make-instance 'surface :width width :height height
 				:pixel-based-p pixel-based-p)))
     (with-checked-status surface
+      (when needs-ref (cairo_surface_reference pointer))
       (setf (slot-value surface 'pointer) pointer)
       ;; register finalizer
-      (tg:finalize surface #'(lambda () (lowlevel-destroy surface)))
+      ;; See CREATE-CONTEXT for why (lowlevel-destroy object) cannot be used here
+      (tg:finalize surface #'(lambda () (cairo_surface_destroy pointer)))
       ;; return surface
       surface)))
 
