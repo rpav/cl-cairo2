@@ -16,7 +16,9 @@
      (let ((pattern (make-instance 'pattern)))
        (with-checked-status pattern
 		 (setf (slot-value pattern 'pointer) (,(prepend-intern "cairo_pattern_create_" type :replace-dash nil) ,@args))
-		 (tg:finalize pattern #'(lambda () (lowlevel-destroy pattern)))))))
+                 (let ((ptr (slot-value pattern 'pointer)))
+                   ;; See CREATE-CONTEXT for why (lowlevel-destroy object) cannot be used here
+                   (tg:finalize pattern #'(lambda () (cairo_pattern_destroy ptr))))))))
 
 (define-create-pattern :rgb red green blue)
 (define-create-pattern :rgba red green blue alpha)
@@ -28,7 +30,9 @@
 	(let ((pattern (make-instance 'pattern)))
 	  (with-checked-status pattern
 		(setf (slot-value pattern 'pointer) (cairo_pattern_create_for_surface i-pointer))
-		(tg:finalize pattern #'(lambda () (lowlevel-destroy pattern)))))))
+		(let ((ptr (slot-value pattern 'pointer)))
+                   ;; See CREATE-CONTEXT for why (lowlevel-destroy object) cannot be used here
+                   (tg:finalize pattern #'(lambda () (cairo_pattern_destroy ptr))))))))
 
 (defmacro define-pattern-function-flexible (name (pattern-name pointer-name &rest args) &body body)
   "make a defun of the appropriate name with a wrapped body and the pattern's pointer bound to ,pointer-name"

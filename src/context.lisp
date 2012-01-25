@@ -46,18 +46,21 @@
 
 (defun create-context (surface)
   (with-cairo-object (surface pointer)
-    (let ((context (make-instance 'context
+    (let* ((context (make-instance 'context
 				  :pointer (cairo_create pointer)
 				  :width (width surface)
 				  :height (height surface)
-				  :pixel-based-p (pixel-based-p surface))))
+				  :pixel-based-p (pixel-based-p surface)))
+           (context-pointer (slot-value context 'pointer)))
       ;; register finalizer
-     ; (let ((context-pointer (slot-value context 'pointer)))
+      ;; it HAS to be CAIRO_DESTROY, not LOWLEVEL-DESTROY,
+      ;; since:
+      ;; 1) we're not allowed to access the object in the finaliser
+      ;; 2) doing so creates a ref that will prevent the finaliser
+      ;;    from ever running
       (tg:finalize context 
-		     #'(lambda ()
-			 (lowlevel-destroy context)))
-      ;; return context
-      context)))
+                   #'(lambda ()
+                       (cairo_destroy context-pointer))))))
 
 ; cairo-objects' destroy calling lowlevel-destroy should suffice. todo: check this
 ;(defmethod destroy ((object context))
@@ -218,7 +221,7 @@ nonlocal exits."
   "Obtain the target surface of a given context.  Width and height
 will be nil, as cairo can't provide that in general."
   (new-surface-with-check (cairo_get_target (slot-value context 'pointer))
-			  nil nil))
+			  nil nil nil t))
 
 ;;;;
 ;;;; set colors using the cl-colors library
