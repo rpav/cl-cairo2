@@ -13,7 +13,9 @@
 ;;;;  these examples
 ;;;;
 
-(setf *default-pathname-defaults* #P"/home/tpapp/software/cl-cairo2/tutorial/")
+(setf *default-pathname-defaults*
+      (merge-pathnames (make-pathname :directory '(:relative "tutorial"))
+                       (asdf:system-source-directory :cl-cairo2)))
 (assert (directory *default-pathname-defaults*))
 
 ;;;;

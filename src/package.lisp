@@ -18,6 +18,7 @@
    image-surface-get-height image-surface-get-data
    image-surface-get-stride image-surface-create-from-png
    surface-write-to-png with-png-surface
+   wrap-surface
    
    ;; context
     
