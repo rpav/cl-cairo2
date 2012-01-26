@@ -81,6 +81,28 @@
    (height :initarg :height :reader height)
    (pixel-based-p :initarg :pixel-based-p :reader pixel-based-p)))
 
+(define-foreign-type surface-type () ()
+  (:actual-type :pointer)
+  (:simple-parser surface))
+
+(defmethod expand-to-foreign (surface (type surface-type))
+  (get-pointer surface))
+
+(defun create-surface-from-foreign
+    (pointer &optional (pixel-based? t) (assume-memory? t))
+  "Wrap a foreign pointer to a cairo surface in a CL-CAIRO2:SURFACE object. If
+ASSUME-MEMORY? is true, takes control of freeing the memory for the pointer when
+no longer needed."
+  (let ((surface
+         (make-instance 'surface
+                        :width (cairo_image_surface_get_width pointer)
+                        :height (cairo_image_surface_get_height pointer)
+                        :pointer pointer
+                        :pixel-based-p pixel-based?)))
+    (when assume-memory?
+      (tg:finalize surface #'(lambda () (cairo_surface_destroy pointer))))
+    surface))
+
 (defmethod lowlevel-destroy ((surface surface))
   (cairo_surface_destroy (get-pointer surface)))
 
