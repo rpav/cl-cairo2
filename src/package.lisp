@@ -22,7 +22,7 @@
    image-surface-create-from-png-stream
    surface-write-to-png with-png-surface
    create-surface-from-foreign
-   
+
    ;; context
 
    context *context* with-context with-png-file create-context sync

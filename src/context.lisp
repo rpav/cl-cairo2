@@ -30,6 +30,9 @@
 (defmethod translate-to-foreign (context (type context-type))
   (get-pointer context))
 
+(defmethod expand-to-foreign (context (type context-type))
+  `(get-pointer ,context))
+
 (defvar *context* nil
   "The default context for cl-cairo2 functions.")
 
