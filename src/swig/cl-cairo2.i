@@ -3,6 +3,11 @@
 %ignore CAIRO_VERSION;
 %ignore CAIRO_VERSION_STRING;
 
+%ignore CAIRO_MIME_TYPE_JPEG;
+%ignore CAIRO_MIME_TYPE_PNG;
+%ignore CAIRO_MIME_TYPE_JP2;
+%ignore CAIRO_MIME_TYPE_URI;
+
 %typemap(cin) double "my-double";
 
 %insert("lisphead") %{
