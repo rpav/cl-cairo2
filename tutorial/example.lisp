@@ -14,8 +14,8 @@
 ;;;;
 
 (setf *default-pathname-defaults*
-      (merge-pathnames "tutorial/"
-                       (asdf:component-pathname (asdf:find-system :cl-cairo2))))
+      (merge-pathnames (make-pathname :directory '(:relative "tutorial"))
+                       (asdf:system-source-directory :cl-cairo2)))
 (assert (directory *default-pathname-defaults*))
 
 ;;;;

@@ -23,6 +23,13 @@
    (height :initarg :height :reader height)
    (pixel-based-p :initarg :pixel-based-p :reader pixel-based-p)))
 
+(define-foreign-type context-type () ()
+  (:actual-type :pointer)
+  (:simple-parser context))
+
+(defmethod translate-to-foreign (context (type context-type))
+  (get-pointer context))
+
 (defvar *context* nil
   "The default context for cl-cairo2 functions.")
 

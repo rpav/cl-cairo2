@@ -1,2 +1,6 @@
 *.fasl
 *~
+tutorial/*.pdf
+tutorial/*.png
+tutorial/*.log
+tutorial/*.out
