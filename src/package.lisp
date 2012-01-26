@@ -6,21 +6,24 @@
   (:export
 
    ;; cairo
-    
+
    destroy deg-to-rad
-    
+
    ;; surface
-    
+
    surface pointer width height pixel-based-p destroy
    create-ps-surface create-pdf-surface create-svg-surface
    create-image-surface create-image-surface-for-data
+   create-image-surface-for-array
    image-surface-get-format image-surface-get-width
    image-surface-get-height image-surface-get-data
    image-surface-get-stride image-surface-create-from-png
+   image-surface-create-from-png-callback
+   image-surface-create-from-png-stream
    surface-write-to-png with-png-surface
-   
+
    ;; context
-    
+
    context *context* with-context with-png-file create-context sync
    sync-lock sync sync-unlock sync-reset with-sync-lock save restore
    push-group pop-group pop-group-to-source set-source-rgb
@@ -34,7 +37,7 @@
    create-svg-context get-target set-source-surface
 
    ;; pattern
-   
+
    pattern create-rgb-pattern create-rgba-pattern
    create-linear-pattern create-radial-pattern
    create-pattern-for-surface pattern-add-color-stop-rgb
@@ -48,7 +51,7 @@
 
    new-path new-sub-path close-path arc arc-negative curve-to line-to
    move-to rectangle rel-move-to rel-curve-to rel-line-to text-path
-   get-current-point 
+   get-current-point
 
    ;; text
 
