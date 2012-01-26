@@ -8,7 +8,7 @@
   :description "Cairo 1.8 bindings, Quartz(not yet) plus xlib surfaces and GTK extension"
   :version "0.1"
   :author "Tamas K Papp, Kei Suzuki"
-  :license "GPL"
+  :license "BOOST 1.0"
   :serial t
   :components
   ((:module

@@ -76,7 +76,7 @@
 ;;;;
 
 
-(defclass surface (cairo-object) 
+(defclass surface (cairo-object)
   ((width :initarg :width :reader width)
    (height :initarg :height :reader height)
    (pixel-based-p :initarg :pixel-based-p :reader pixel-based-p)))
@@ -110,14 +110,18 @@ no longer needed."
     (lookup-cairo-enum (cairo_surface_status (get-pointer surface)) table-status)))
 
 
-(defun new-surface-with-check (pointer width height &optional (pixel-based-p nil))
-  "Check if the creation of new surface was successful, if so, return new class."
+(defun new-surface-with-check (pointer width height &optional (pixel-based-p nil) (needs-ref nil))
+  "Check if the creation of new surface was successful, if so, return new class.
+Optional NEEDS-REF parameter specifies the surface is owned by the foreign side
+and needs to be referenced before use."
   (let ((surface (make-instance 'surface :width width :height height
 				:pixel-based-p pixel-based-p)))
     (with-checked-status surface
+      (when needs-ref (cairo_surface_reference pointer))
       (setf (slot-value surface 'pointer) pointer)
       ;; register finalizer
-      (tg:finalize surface #'(lambda () (lowlevel-destroy surface)))
+      ;; See CREATE-CONTEXT for why (lowlevel-destroy object) cannot be used here
+      (tg:finalize surface #'(lambda () (cairo_surface_destroy pointer)))
       ;; return surface
       surface)))
 
@@ -171,10 +175,52 @@ no longer needed."
 										width height stride)
    width height t))
 
+(defun create-image-surface-for-array (data)
+  "Create a cairo image surface from DATA. The dimensions and color
+format of the created surface are determined based on the shaped of
+DATA:
++ WxH   -> BW
++ WxHx3 -> RGB
++ WxHx4 -> ARGB"
+  ;; Make sure we can interpret DATA based on its shape.
+  (check-type data (or (array t (* *))
+		       (array t (* * 3))
+		       (array t (* * 4))))
+
+  (let* ((format (cond
+		   ((typep data '(array t (* *)))
+		    :a8)
+		   ((typep data '(array t (* * 3)))
+		    :rgb24)))
+	 (epp    (cond
+		   ((typep data '(array t (* *)))
+		    1)
+		   ((typep data '(array t (* * 3)))
+		    3)))
+	 (format (lookup-enum format table-format))
+	 (height (array-dimension data 0))
+	 (width  (array-dimension data 1))
+	 (stride (cairo_format_stride_for_width format width))
+	 (size   (* stride height))
+	 (buffer (cffi:foreign-alloc :unsigned-char
+				     :count size)))
+    (dotimes (i height)
+      (let ((row (make-array (* width epp)
+			     :displaced-to           data
+			     :displaced-index-offset (* i width epp)))
+	    (offset (* stride i)))
+	(dotimes (j (* width epp))
+	  (setf (mem-aref buffer :unsigned-char offset) (aref row j))
+	  (incf offset (if (and (= epp 3) (zerop (mod (1+ j) epp))) 2 1))))) ;; TODO slow
+    (new-surface-with-check
+     (cairo_image_surface_create_for_data
+      buffer format width height stride)
+     width height t)))
+
 (defun get-bytes-per-pixel (format)
   (case format
     (:argb32 4)
-    (:rgb24 3)
+    (:rgb24 4)
     (:a8 1)
     (otherwise (error (format nil "unknown format: ~a" format))))) ;todo: how does format-a1 fit in here?
 
@@ -217,13 +263,55 @@ Otherwise, return the copy of the image data along with the pointer."
 ;;;;
 
 (defun image-surface-create-from-png (filename)
-  (let ((surface 
+  (let ((surface
 	 (new-surface-with-check (cairo_image_surface_create_from_png filename)
 				 0 0)))
     (with-slots (width height) surface
       (setf width (image-surface-get-width surface)
 	    height (image-surface-get-height surface))
       surface)))
+
+(declaim (special *read-callback*))
+
+(defvar *read-callback* nil
+  "Stores callback functions to be called from
+cairo_image_surface_create_from_png_stream.")
+
+(cffi:defcallback read-function cairo_status_t
+    ((closure :pointer)
+     (data    (:pointer :unsigned-char))
+     (length  :unsigned-int))
+  (let ((length (convert-from-foreign length :unsigned-int))
+	(read   (funcall *read-callback* length)))
+    (dotimes (i length)
+      (setf (cffi:mem-aref data :unsigned-char i) (aref read i))))
+  :CAIRO_STATUS_SUCCESS)
+
+(defun image-surface-create-from-png-callback (callback)
+  "Construct a cairo image surface by repeatedly calling CALLBACK
+retrieving one chunk of PNG data at a time. CALLBACK should take a
+single argument which is the amount of data that to be retrieved."
+  ;; This implementation is a bit hackish: We do not use the closure
+  ;; pointer provided in the cairo api, but store the callback in the
+  ;; special variable *read-callback*.
+  (let* ((*read-callback* callback)
+	 (surface	  (new-surface-with-check
+			   (with-foreign-object (closure :pointer)
+			     (cairo_image_surface_create_from_png_stream
+			      (cffi:callback read-function) closure))
+			   0 0)))
+    (with-slots (width height) surface
+      (setf width (image-surface-get-width surface)
+	    height (image-surface-get-height surface))
+     surface)))
+
+(defun image-surface-create-from-png-stream (stream)
+  "Construct a cairo image surface by reading PNG data from STREAM."
+  (flet ((read-chunk (size)
+	   (let ((buffer (make-array size :element-type 'unsigned-byte)))
+	     (read-sequence buffer stream)
+	     buffer)))
+    (image-surface-create-from-png-stream #'read-chunk)))
 
 (defun surface-write-to-png (surface filename)
   (with-cairo-object (surface pointer)

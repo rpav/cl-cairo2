@@ -7,19 +7,19 @@
   :description "Cairo 1.8 bindings"
   :version "0.5"
   :author "Tamas K Papp, Kei Suzuki"
-  :license "GPL"
+  :license "BOOST 1.0"
   :serial t
   :components
-  ((:module 
+  ((:module
     "package-init"
     :pathname #P"src/"
-    :components 
+    :components
     ((:file "package")))
    (:module
     "foreign-interface"
     :pathname #P"src/"
     :serial t
-    :components 
+    :components
     ((:file "load-libraries")
      (:file "my-double")
      (:file "cl-cairo2-swig")))
