@@ -9,3 +9,6 @@
                                                                               
 (defmethod translate-to-foreign (value (type my-double-type))
   (coerce value 'double-float))
+
+(defmethod expand-to-foreign (value (type my-double-type))
+  `(coerce ,value 'double-float))
