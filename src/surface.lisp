@@ -157,7 +157,7 @@ and needs to be referenced before use."
 (defun get-bytes-per-pixel (format)
   (case format
     (:argb32 4)
-    (:rgb24 3)
+    (:rgb24 4)
     (:a8 1)
     (otherwise (error (format nil "unknown format: ~a" format))))) ;todo: how does format-a1 fit in here?
 
