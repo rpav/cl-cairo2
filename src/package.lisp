@@ -35,7 +35,7 @@
    set-fill-rule get-line-cap set-line-cap get-line-join set-line-join
    get-operator set-operator fill-path set-dash get-dash clip-extents
    fill-extents in-fill in-stoke create-ps-context create-pdf-context
-   create-svg-context get-target set-source-surface
+   create-svg-context get-target mask-surface set-source-surface
 
    ;; pattern
 

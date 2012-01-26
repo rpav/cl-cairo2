@@ -7,7 +7,6 @@
 ;;;;    cairo-get-target
 ;;;;    push-group-with-content
 ;;;;    get-group-target
-;;;;    mask-surface
 ;;;;
 ;;;;
 ;;;;  not sure anyone needs:
@@ -220,6 +219,11 @@ nonlocal exits."
 (define-with-default-context-sync stroke)
 (define-with-default-context-sync stroke-preserve)
 
+(define-flexible (mask-surface context-pointer surface x y)
+  (with-alive-object (surface surface-pointer)
+    (with-checked-status surface
+      (cairo_mask_surface context-pointer surface-pointer x y))))
+
 (defun set-source-surface (image x y &optional (context *context*))
   (with-alive-object (image i-pointer)
 	(with-context-pointer (context c-pointer)
@@ -308,6 +312,9 @@ will be nil, as cairo can't provide that in general."
 
 (define-flexible (in-stroke pointer x y)
   (not (zerop (cairo_in_stroke pointer x y))))
+
+(define-flexible (in-clip pointer x y)
+  (not (zerop (cairo_in_clip pointer x y))))
 
 ;;;;
 ;;;;  convenience functions for creating contexts directly
