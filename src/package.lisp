@@ -21,7 +21,7 @@
    image-surface-create-from-png-callback
    image-surface-create-from-png-stream
    surface-write-to-png with-png-surface
-   wrap-surface
+   create-surface-from-foreign
    
    ;; context
 

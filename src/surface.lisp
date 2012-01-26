@@ -85,10 +85,11 @@
   (:actual-type :pointer)
   (:simple-parser surface))
 
-(defmethod translate-to-foreign (surface (type surface-type))
+(defmethod expand-to-foreign (surface (type surface-type))
   (get-pointer surface))
 
-(defun wrap-surface (pointer &optional (pixel-based? t) (assume-memory? t))
+(defun create-surface-from-foreign
+    (pointer &optional (pixel-based? t) (assume-memory? t))
   "Wrap a foreign pointer to a cairo surface in a CL-CAIRO2:SURFACE object. If
 ASSUME-MEMORY? is true, takes control of freeing the memory for the pointer when
 no longer needed."
