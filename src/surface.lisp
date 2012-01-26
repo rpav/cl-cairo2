@@ -99,7 +99,7 @@ no longer needed."
                         :pointer pointer
                         :pixel-based-p pixel-based?)))
     (when assume-memory?
-      (tg:finalize surface #'(lambda () (lowlevel-destroy surface))))
+      (tg:finalize surface #'(lambda () (cairo_surface_destroy pointer))))
     surface))
 
 (defmethod lowlevel-destroy ((surface surface))
