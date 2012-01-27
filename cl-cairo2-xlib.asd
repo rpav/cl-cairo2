@@ -17,7 +17,9 @@
     :components
     ((:file "cl-cairo2-xlib-swig")
      (:file "load-libraries-x11")
-     (:file "xlib")))
+     (:file "xlib")
+     #+freetype2
+     (:file "freetype")))
    (:module
     "core"
     :pathname #P"src/xlib/"
