@@ -1,5 +1,6 @@
 (in-package :cl-cairo2)
 
+ ;; toy interface
 ;;;;
 ;;;;  Notes
 ;;;;
@@ -37,8 +38,8 @@
 
 (define-with-default-context-sync show-text text)
 
-;;;
-;;; low level text and font support
+ ;; low level types and utilities
+
 ;;;
 ;;; The structures, text-extents-t and font-extnts-t, are opaque to the client.
 ;;; shorthand accessor functions are defined to reference the member variables.
@@ -111,3 +112,107 @@
 (define-flexible (get-font-extents ctx-pointer)
   (with-font-extents-t-out fet-pointer
 	(cairo_font_extents ctx-pointer fet-pointer)))
+
+;;;
+;;; This is a bit of a massive hack to handle glyph arrays in a
+;;; somewhat efficient manner (i.e., we don't allocate everytime
+;;; we want to display, and copy lots of struct values to lots of
+;;; foreign struct values).
+;;;
+(defstruct (glyph-array (:constructor %make-glyph-array))
+  (count 0 :type integer)
+  (filled 0 :type integer)
+  (pointer))
+
+(declaim (inline set-glyph))
+(defun set-glyph (glyph-ptr index x y)
+  (setf (foreign-slot-value glyph-ptr 'cairo_glyph_t 'index) index)
+  (setf (foreign-slot-value glyph-ptr 'cairo_glyph_t 'x) x)
+  (setf (foreign-slot-value glyph-ptr 'cairo_glyph_t 'y) y))
+
+(defun make-glyph-array (count)
+  (let* ((ptr (cffi:foreign-alloc 'cairo_glyph_t :count count))
+         (array (%make-glyph-array :count count :pointer ptr)))
+    (tg:finalize array (lambda () (foreign-free ptr)))
+    array))
+
+(defun glyph-array-add (glyph-array index x y)
+  (when (>= (glyph-array-filled glyph-array)
+            (glyph-array-count glyph-array))
+    (error "Glyph array too small (length ~A)" (glyph-array-count glyph-array)))
+  (let* ((next (glyph-array-filled glyph-array))
+         (glyph (cffi:mem-aref (glyph-array-pointer glyph-array)
+                              'cairo_glyph_t next)))
+    (set-glyph glyph index x y)
+    (incf (glyph-array-filled glyph-array))
+    (values)))
+
+(defun glyph-array-set-glyph (glyph-array array-index glyph-index x y)
+  (when (>= array-index (glyph-array-count glyph-array))
+    (error "Glyph array too small (length ~A)" (glyph-array-count glyph-array)))
+  (let* ((glyph (cffi:mem-aref (glyph-array-pointer glyph-array)
+                               'cairo_glyph_t array-index)))
+    (set-glyph glyph glyph-index x y)
+    (when (>= array-index (glyph-array-filled glyph-array))
+      (setf (glyph-array-filled glyph-array) (1+ array-index)))
+    (values)))
+
+(defun glyph-array-reset-fill (glyph-array)
+  (setf (glyph-array-filled glyph-array) 0))
+
+ ;; low-level functions
+
+(define-flexible (set-font-matrix ctx matrix)
+  (with-trans-matrix-in matrix mptr
+    (cairo_set_font_matrix ctx mptr)))
+
+(define-flexible (get-font-matrix ctx)
+  (with-trans-matrix-out mptr
+    (cairo_get_font_matrix ctx mptr)))
+
+(define-flexible (set-font-options ctx font-options)
+  (with-alive-object (font-options ptr)
+    (cairo_set_font_options ctx ptr)))
+
+(define-flexible (get-font-options ctx)
+  (let ((font-options (create-font-options)))
+    (cairo_get_font_options ctx (get-pointer font-options))
+    font-options))
+
+(define-flexible (set-font-face ctx font-face)
+  (if (null font-face)
+      (cairo_set_font_face ctx (null-pointer))
+      (with-alive-object (font-face ptr)
+        (cairo_set_font_face ctx ptr))))
+
+(define-flexible (get-font-face ctx)
+  (let* ((ptr (with-checked-status (cairo_get_font_face ctx)))
+         (font-face (make-instance 'font-face :pointer ptr)))
+    (cairo_font_face_reference ptr)
+    (tg:finalize font-face (lambda () (cairo_font_face_destroy ptr)))
+    font-face))
+
+(define-flexible (set-scaled-font ctx scaled-font)
+  (with-alive-object (scaled-font ptr)
+    (cairo_set_scaled_font ctx ptr)))
+
+(define-flexible (get-scaled-font ctx)
+  (let* ((ptr (with-checked-status (cairo_get_scaled_font ctx)))
+         (font-face (make-instance 'scaled-font :pointer ptr)))
+    (cairo_scaled_font_reference ptr)
+    (tg:finalize font-face (lambda () (cairo_scaled_font_destroy ptr)))
+    font-face))
+
+(define-flexible (show-glyphs ctx glyph-array)
+  (cairo_show_glyphs ctx
+                     (glyph-array-pointer glyph-array)
+                     (glyph-array-filled glyph-array)))
+
+;;; cairo_show_text_glyphs - not implemented
+
+(define-flexible (glyph-extents ctx glyph-array)
+  (with-text-extents-t-out ptr
+    (cairo_glyph_extents ctx
+                         (glyph-array-pointer glyph-array)
+                         (glyph-array-filled glyph-array)
+                         ptr)))
