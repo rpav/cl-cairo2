@@ -31,11 +31,13 @@ the FONT-FACE is destroyed, you should not use the FT-FACE in any way
 without calling FT-SCALED-FONT-LOCK-FACE.  See the general Freetype2/Cairo
 warning."
   (let* ((ptr (cairo_ft_font_face_create_for_ft_face
-              source-face
-              (convert-to-foreign load-flags 'ft2-types:ft-load-flags)))
+               (ft2-types:w* source-face)
+               (convert-to-foreign load-flags 'ft2-types:ft-load-flags)))
          (font (make-instance 'freetype-font-face
                               :face source-face
                               :pointer ptr)))
+    ;; Still technically incorrect I believe because something else
+    ;; could reference this.  Solve by callback.
     (tg:finalize font (lambda () (cairo_font_face_destroy ptr)))
     font))
 

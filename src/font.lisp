@@ -102,14 +102,14 @@
  ;; cairo_font_options_t functions
 
 (defun create-font-options ()
-  (let* ((pointer (with-checked-status (cairo_font_options_create)))
+  (let* ((pointer (cairo_font_options_create))
          (options (make-instance 'font-options :pointer pointer)))
     (tg:finalize options (lambda () (cairo_font_options_destroy pointer)))
     options))
 
 (defun font-options-copy (font-options)
   (with-alive-object (font-options src)
-    (let* ((dest (with-checked-status (cairo_font_options_copy src)))
+    (let* ((dest (cairo_font_options_copy src))
            (options (make-instance 'font-options :pointer dest)))
       (tg:finalize options (lambda () (cairo_font_options_destroy dest)))
       options)))
