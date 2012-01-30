@@ -2,7 +2,7 @@
 
 ;;;; WARNING:
 ;;;;
-;;;; Using this interface may prove problematic.  Once Cairo has a
+;;;; Using this interface may prove problematic.  Once Cairo has an
 ;;;; FT-FACE, it may render it at any time.  Since Freetype2 in
 ;;;; general does no locking, this means you should essentially
 ;;;; never use the same FT-LIBRARY object associated with faces passed
@@ -23,6 +23,13 @@
 (defclass freetype-font-face (font-face)
   ((face :initarg :face :initform nil)))
 
+ ;; Callbacks
+
+(defvar *freetype-data-key* (cffi:foreign-alloc 'cairo_user_data_key_t))
+
+(defcallback ft-destroy-cb :void ((data :pointer))
+  (freetype2-ffi:ft-done-face data))
+
  ;; Interface
 
 (defmethod create-font ((source-face ft2-types:ft-face) &key load-flags)
@@ -36,8 +43,14 @@ warning."
          (font (make-instance 'freetype-font-face
                               :face source-face
                               :pointer ptr)))
-    ;; Still technically incorrect I believe because something else
-    ;; could reference this.  Solve by callback.
+    (tg:cancel-finalization source-face)
+    (let ((status
+            (cairo_font_face_set_user_data ptr
+                                           *freetype-data-key*
+                                           (ft2-types:w* source-face)
+                                           (callback ft-destroy-cb))))
+      (unless (eq status :cairo_status_success)
+        (freetype2-ffi:ft-done-face (ft2-types:w* source-face))
+        (error "Could not set destroy_func: ~A" status)))
     (tg:finalize font (lambda () (cairo_font_face_destroy ptr)))
     font))
-
