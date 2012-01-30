@@ -65,6 +65,28 @@
    font-max-x-advance font-max-y-advance
    get-font-extents
 
+   glyph-array make-glyph-array glyph-array-add glyph-array-set-glyph
+   glyph-array-reset-fill
+
+   set-font-matrix get-font-matrix set-font-options get-font-options
+   set-font-face get-font-face set-scaled-font get-scaled-font
+   show-glyphs glyph-extents
+
+   ;; font
+
+   font-face scaled-font font-options
+
+   create-font set-font
+
+   create-scaled-font scaled-font-extents scaled-font-text-extents
+   scaled-font-glyph-extents scaled-font-get-type
+
+   create-font-options font-options-copy font-options-merge font-options-hash
+   font-options-equal font-options-set-antialias font-options-get-antialias
+   font-options-set-subpixel-order font-options-get-subpixel-order
+   font-options-set-hint-style font-options-get-hint-style
+   font-options-set-hint-metrics font-options-get-hint-metrics
+
    ;; transformations
 
    translate scale rotate reset-trans-matrix make-trans-matrix
@@ -80,6 +102,11 @@
    ;; xlib/xlib-image-interface
 
    xlib-image-context
+
+   ;; xlib/freetype
+
+   freetype-font-face ft-scaled-font-lock-face ft-scaled-font-unlock-face
+   with-ft-scaled-face-locked
 
    ;; gtk2/gtk2-interface
 

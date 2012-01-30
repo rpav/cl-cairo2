@@ -54,3 +54,21 @@ warning."
         (error "Could not set destroy_func: ~A" status)))
     (tg:finalize font (lambda () (cairo_font_face_destroy ptr)))
     font))
+
+(defun ft-scaled-font-lock-face (font-face)
+  (let ((ptr (cairo_ft_scaled_font_lock_face (get-pointer font-face))))
+    (ft2-types:%make-ft-face :ptr ptr)))
+
+(defun ft-scaled-font-unlock-face (font-face)
+  (cairo_ft_scaled_font_unlock_face (get-pointer font-face)))
+
+(defmacro with-ft-scaled-face-locked ((ft-face-var font-face) &body body)
+  (let ((font-face-var (gensym))
+        (ptr-var (gensym)))
+    `(with-foreign-object (,ptr-var :pointer)
+       (let ((,font-face-var ,font-face))
+         (setf (mem-ref ,ptr-var :pointer)
+               (cairo_ft_scaled_font_lock_face (get-pointer ,font-face-var)))
+         (let ((,ft-face-var (ft2-types:%make-ft-face :ptr ,ptr-var)))
+           (unwind-protect (progn ,@body)
+             (cairo_ft_scaled_font_unlock_face (get-pointer ,font-face-var))))))))

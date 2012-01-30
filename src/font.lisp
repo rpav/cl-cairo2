@@ -28,7 +28,16 @@
 (defgeneric create-font (source-face &key &allow-other-keys)
   (:documentation "Create a FONT-FACE (cairo_font_t) from SOURCE-FACE"))
 
+(defgeneric set-font (font-face &optional context)
+  (:documentation "Set the current font to FONT-FACE"))
+
  ;; Methods
+
+(defmethod set-font ((font-face font-face) &optional (context *context*))
+  (set-font-face font-face context))
+
+(defmethod set-font ((font-face scaled-font) &optional (context *context*))
+  (set-scaled-font font-face context))
 
 (defmethod lowlevel-destroy ((object font-face))
   (cairo_font_face_destroy (get-pointer object)))
