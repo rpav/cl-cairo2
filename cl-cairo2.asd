@@ -35,7 +35,8 @@
      (:file "pattern")
      (:file "path")
      (:file "text")
-     (:file "font")))
+     (:file "font")
+     (:file "user-font")))
    (:module
     "xlib"
     :pathname #P"src/xlib/"

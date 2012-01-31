@@ -55,8 +55,11 @@
 
 (defmacro defstruct-extents-t (prefix &rest slots)
   (let ((struct-name (intern (concatenate 'string (symbol-name prefix)
-					  "-EXTENTS-T"))))
+					  "-EXTENTS-T")))
+        (make-name (intern (concatenate 'string
+                                        "MAKE-" (symbol-name prefix) "-EXTENTS-T"))))
 	`(progn
+           (declaim (inline ,make-name))
 	   (defstruct ,struct-name ,@slots)
 	   ,@(loop for slot in slots collect
 		  `(def-extents-t-shortname ,prefix ,struct-name ,slot)))))
@@ -74,6 +77,17 @@
 	  (text-extents-t-height	text-extents-t) height
 	  (text-extents-t-x-advance	text-extents-t) x_advance
 	  (text-extents-t-y-advance	text-extents-t) y_advance)))
+
+(defun text-extents-t-copy-in (pointer text-extents-t)
+  "Copy the contents of a memory location to a text-extents-t object."
+  (with-foreign-slots ((x_bearing y_bearing width height x_advance
+                                  y_advance) pointer cairo_text_extents_t)
+    (setf x_bearing (text-extents-t-x-bearing text-extents-t)
+          y_bearing (text-extents-t-y-bearing text-extents-t)
+          width (text-extents-t-width text-extents-t)
+          height (text-extents-t-height text-extents-t)
+          x_advance (text-extents-t-x-advance text-extents-t)
+          y_advance (text-extents-t-y-advance text-extents-t))))
 
 (defmacro with-text-extents-t-out (pointer &body body)
   "Execute body with pointer pointing to an uninitialized location,
@@ -93,11 +107,22 @@
   "Copy the contents of a memory location to a font-extents-t object."
   (with-foreign-slots ((ascent descent height max_x_advance
 			       max_y_advance) pointer cairo_font_extents_t)
-    (setf (font-extents-t-ascent		font-extents-t) ascent
-		  (font-extents-t-descent		font-extents-t) descent
-		  (font-extents-t-height		font-extents-t) height
-		  (font-extents-t-max-x-advance	font-extents-t) max_x_advance
-		  (font-extents-t-max-y-advance	font-extents-t) max_y_advance)))
+    (setf (font-extents-t-ascent        font-extents-t) ascent
+          (font-extents-t-descent       font-extents-t) descent
+          (font-extents-t-height        font-extents-t) height
+          (font-extents-t-max-x-advance font-extents-t) max_x_advance
+          (font-extents-t-max-y-advance font-extents-t) max_y_advance)))
+
+(defun font-extents-t-copy-in (pointer font-extents-t)
+  "Copy the contents of a font-extents-t object to a cairo_font_extents_t
+pointer."
+  (with-foreign-slots ((ascent descent height max_x_advance
+			       max_y_advance) pointer cairo_font_extents_t)
+    (setf ascent (font-extents-t-ascent font-extents-t)
+          descent (font-extents-t-descent font-extents-t)
+          height (font-extents-t-height font-extents-t)
+          max_x_advance (font-extents-t-max-x-advance font-extents-t)
+          max_y_advance (font-extents-t-max-y-advance font-extents-t))))
 
 (defmacro with-font-extents-t-out (pointer &body body)
   "Execute body with pointer pointing to an uninitialized location,
