@@ -80,12 +80,17 @@
 
    create-scaled-font scaled-font-extents scaled-font-text-extents
    scaled-font-glyph-extents scaled-font-get-type
+   scaled-font-face
 
    create-font-options font-options-copy font-options-merge font-options-hash
    font-options-equal font-options-set-antialias font-options-get-antialias
    font-options-set-subpixel-order font-options-get-subpixel-order
    font-options-set-hint-style font-options-get-hint-style
    font-options-set-hint-metrics font-options-get-hint-metrics
+
+   ;; user-font
+
+   user-font-face
 
    ;; transformations
 

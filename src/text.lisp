@@ -51,7 +51,9 @@
 	(longname (intern (concatenate 'string (symbol-name struct-name)
 				       "-" (symbol-name slot)))))
     `(defun ,shortname (extents-t)
-       (,longname extents-t))))
+       (,longname extents-t))
+    `(defun (setf ,shortname) (value extents-t)
+       (setf (,longname extents-t) value))))
 
 (defmacro defstruct-extents-t (prefix &rest slots)
   (let ((struct-name (intern (concatenate 'string (symbol-name prefix)
