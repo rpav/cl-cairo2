@@ -67,15 +67,22 @@
 (defun create-scaled-font (font font-matrix matrix options)
   (with-alive-object (font f-ptr)
     (with-alive-object (options o-ptr)
-      (with-trans-matrix-in font-matrix fm-ptr
-        (with-trans-matrix-in matrix m-ptr
-          (let* ((s-ptr (cairo_scaled_font_create f-ptr fm-ptr m-ptr o-ptr))
-                 (scaled-font (make-instance 'scaled-font
-                                             :pointer s-ptr
-                                             :font-face font)))
-            (tg:finalize scaled-font
-                         (lambda () (cairo_scaled_font_destroy s-ptr)))
-            scaled-font))))))
+      (let ((fm-ptr (foreign-alloc 'cairo_matrix_t))
+            (m-ptr (foreign-alloc 'cairo_matrix_t)))
+        (trans-matrix-copy-in fm-ptr font-matrix)
+        (trans-matrix-copy-in m-ptr matrix)
+        (let* ((s-ptr (cairo_scaled_font_create f-ptr fm-ptr m-ptr o-ptr))
+               (scaled-font (make-instance 'scaled-font
+                                           :pointer s-ptr
+                                           :font-face font)))
+          (tg:cancel-finalization options)
+          (tg:finalize scaled-font
+                       (lambda ()
+                         (cairo_scaled_font_destroy s-ptr)
+                         (foreign-free fm-ptr)
+                         (foreign-free m-ptr)
+                         (cairo_font_options_destroy o-ptr)))
+          scaled-font)))))
 
 (defun scaled-font-extents (scaled-font)
   (with-alive-object (scaled-font font-pointer)
