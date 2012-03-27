@@ -1,0 +1,8 @@
+#ifndef CAIRO_FEATURES_H
+#define CAIRO_FEATURES_H
+
+#define CAIRO_HAS_XCB_SURFACE 1
+#define CAIRO_HAS_FT_FONT 1
+#define CAIRO_HAS_FC_FONT 1
+
+#endif

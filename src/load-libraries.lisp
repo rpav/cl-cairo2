@@ -21,6 +21,10 @@
   (:documentation "Destroys Cairo object."))
 (export 'destroy)
 
+(defgeneric reference-count (object)
+  (:documentation "Return Cairo's reference count for OBJECT"))
+(export 'reference-count)
+
 ;;;;
 ;;;;  commonly used macros/functions
 ;;;;

@@ -113,6 +113,9 @@ no longer needed."
   (with-alive-object (surface pointer)
     (lookup-cairo-enum (cairo_surface_status (get-pointer surface)) table-status)))
 
+(defmethod reference-count ((surface surface))
+  (with-alive-object (surface pointer)
+    (cairo_surface_get_reference_count pointer)))
 
 (defun new-surface-with-check (pointer width height &optional (pixel-based-p nil) (needs-ref nil))
   "Check if the creation of new surface was successful, if so, return new class.
@@ -129,6 +132,13 @@ and needs to be referenced before use."
       ;; return surface
       surface)))
 
+(defun surface-flush (surface)
+  (with-checked-status surface
+    (cairo_surface_flush (get-pointer surface))))
+
+(defun surface-finish (surface)
+  (with-checked-status surface
+    (cairo_surface_finish (get-pointer surface))))
 
 ;;;;
 ;;;; Macros to create surfaces (that are written into files) and
@@ -285,6 +295,7 @@ cairo_image_surface_create_from_png_stream.")
     ((closure :pointer)
      (data    (:pointer :unsigned-char))
      (length  :unsigned-int))
+  (declare (ignore closure))
   (let ((length (convert-from-foreign length :unsigned-int))
 	(read   (funcall *read-callback* length)))
     (dotimes (i length)

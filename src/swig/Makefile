@@ -2,13 +2,14 @@ ifndef CAIRO_INCLUDE_DIR
 CAIRO_INCLUDE_DIR=./cairo-headers/1.10.2
 endif
 
-PLATFORMS := xlib quartz win32
+PLATFORMS := xlib quartz win32 xcb
 
 CAIRO_INCLUDE_FILES=$(wildcard $(CAIRO_INCLUDE_DIR)/*.h)
 
 .PHONY: all install clean
 
-all: cl-cairo2-swig.lisp cl-cairo2-xlib-swig.lisp cl-cairo2-quartz-swig.lisp cl-cairo2-win32-swig.lisp
+all: cl-cairo2-swig.lisp cl-cairo2-xlib-swig.lisp cl-cairo2-quartz-swig.lisp \
+     cl-cairo2-win32-swig.lisp cl-cairo2-xcb-swig.lisp
 
 install: all
 	for i in $(PLATFORMS); do cp cl-cairo2-$$i-swig.lisp ../$$i; done
@@ -23,6 +24,9 @@ cl-cairo2-swig.lisp: cl-cairo2.i cairo-custom-features.h $(CAIRO_INCLUDE_FILES)
 
 cl-cairo2-xlib-swig.lisp: cl-cairo2-xlib.i $(CAIRO_INCLUDE_FILES)
 	swig -cffi -noswig-lisp -I./cairo-features/xlib -I$(CAIRO_INCLUDE_DIR) cl-cairo2-xlib.i
+
+cl-cairo2-xcb-swig.lisp: cl-cairo2-xcb.i $(CAIRO_INCLUDE_FILES)
+	swig -cffi -noswig-lisp -I/usr/include -I./cairo-features/xcb -I$(CAIRO_INCLUDE_DIR) cl-cairo2-xcb.i
 
 cl-cairo2-quartz-swig.lisp: cl-cairo2-quartz.i $(CAIRO_INCLUDE_FILES)
 	swig -cffi -noswig-lisp -I./cairo-features/quartz -I$(CAIRO_INCLUDE_DIR) cl-cairo2-quartz.i

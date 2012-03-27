@@ -22,6 +22,7 @@
    image-surface-create-from-png-stream
    surface-write-to-png with-png-surface
    create-surface-from-foreign
+   surface-flush surface-finish
 
    ;; context
 
@@ -108,7 +109,11 @@
 
    xlib-image-context
 
-   ;; xlib/freetype
+   ;; xcb
+
+   create-xcb-surface xcb-surface-set-size
+
+   ;; freetype
 
    freetype-font-face ft-scaled-font-lock-face ft-scaled-font-unlock-face
    with-ft-scaled-face-locked

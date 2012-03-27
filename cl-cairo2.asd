@@ -37,6 +37,9 @@
      (:file "text")
      (:file "font")
      (:file "user-font")))
+   #+freetype2
+   (:mode "freetype"
+    ((:file "freetype")))
    (:module
     "xlib"
     :pathname #P"src/xlib/"
