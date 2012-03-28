@@ -20,10 +20,19 @@
                    ;; See CREATE-CONTEXT for why (lowlevel-destroy object) cannot be used here
                    (tg:finalize pattern #'(lambda () (cairo_pattern_destroy ptr))))))))
 
+(defun create-pattern-from-foreign (pointer &optional (assume-memory-p t))
+  (let ((pattern (make-instance 'pattern :pointer pointer)))
+    (when assume-memory-p
+      (tg:finalize pattern (lambda () (cairo_pattern_destroy pointer))))
+    pattern))
+
 (define-create-pattern :rgb red green blue)
 (define-create-pattern :rgba red green blue alpha)
 (define-create-pattern :linear start-x start-y end-x end-y)
 (define-create-pattern :radial center0-x center0-y radius0 center1-x center1-y radius1)
+
+#+cairo-1.12
+(define-create-pattern :mesh)
 
 (defun create-pattern-for-surface (image)
   (with-alive-object (image i-pointer)
@@ -83,15 +92,111 @@
 (define-pattern-function-flexible set-filter (pattern pattern-pointer filter)
   (cairo_pattern_set_filter pattern-pointer (lookup-enum filter table-filter)))
 
+#+cairo-1.12
+(progn
+  (define-pattern-function-flexible mesh-begin-patch (pattern pattern-pointer)
+    (cairo_mesh_pattern_begin_patch pattern-pointer))
 
-;; the following functions are missing:
-;get-rgba
-;get-surface
-;get-source
-;get-color-stop-rgba
-;get-color-stop-count
-;get-linear-points
-;get-radial-circles
+  (define-pattern-function-flexible mesh-end-patch (pattern pattern-pointer)
+    (cairo_mesh_pattern_end_patch pattern-pointer))
+
+  (define-pattern-function-flexible mesh-move-to (pattern pattern-pointer x y)
+    (cairo_mesh_pattern_move_to pattern-pointer x y))
+
+  (define-pattern-function-flexible mesh-line-to (pattern pattern-pointer x y)
+    (cairo_mesh_pattern_line_to pattern-pointer x y))
+
+  (define-pattern-function-flexible mesh-curve-to (pattern pattern-pointer x1 y1 x2 y2 x3 y3)
+    (cairo_mesh_pattern_curve_to pattern-pointer x1 y1 x2 y2 x3 y3))
+
+  (define-pattern-function-flexible mesh-set-control-point (pattern pattern-pointer point-num x y)
+    (cairo_mesh_pattern_set_control_point pattern-pointer point-num x y))
+
+  (define-pattern-function-flexible mesh-set-corner-color-rgb (pattern pattern-pointer corner-num r g b)
+    (cairo_mesh_pattern_set_corner_color_rgb pattern-pointer corner-num r g b))
+
+  (define-pattern-function-flexible mesh-set-corner-color-rgba (pattern pattern-pointer corner-num r g b a)
+    (cairo_mesh_pattern_set_corner_color_rgba pattern-pointer corner-num r g b a))
+
+  (define-pattern-function-flexible mesh-get-patch-count (pattern pattern-pointer)
+    (with-foreign-object (count :double)
+      (cairo_mesh_pattern_get_patch_count pattern-pointer count)
+      (mem-ref count :double)))
+
+  ;; FIXME: mesh-get-path, needs paths implemented
+
+  (define-pattern-function-flexible mesh-get-control-point (pattern pattern-pointer patch-num point-num)
+    (with-foreign-objects ((x :double) (y :double))
+      (cairo_mesh_pattern_get_control_point pattern-pointer patch-num point-num x y)
+      (values (mem-ref x :double)
+              (mem-ref y :double))))
+
+  (define-pattern-function-flexible mesh-get-corner-rgba (pattern pattern-pointer patch-num corner-num)
+    (with-foreign-objects ((r :double) (g :double) (b :double) (a :double))
+      (cairo_mesh_pattern_get_corner_color_rgba pattern-pointer patch-num corner-num r g b a)
+      (values (mem-ref r :double)
+              (mem-ref g :double)
+              (mem-ref b :double)
+              (mem-ref a :double)))))
+
+(define-pattern-function-flexible get-rgba (pattern pattern-pointer)
+  (with-foreign-objects ((r :double) (g :double) (b :double) (a :double))
+    (cairo_pattern_get_rgba pattern-pointer r g b a)
+    (values (mem-ref r :double)
+            (mem-ref g :double)
+            (mem-ref b :double)
+            (mem-ref a :double))))
+
+(define-pattern-function-flexible get-surface (pattern pattern-pointer)
+  (with-foreign-object (surf :pointer)
+    (cairo_pattern_get_surface pattern-pointer surf)
+    (let ((surface-pointer (mem-ref surf :pointer)))
+      (cairo_surface_reference surface-pointer)
+      (create-surface-from-foreign surface-pointer))))
+
+(define-flexible (get-source ctx)
+  (let ((pattern-pointer (cairo_get_source ctx)))
+    (cairo_pattern_reference pattern-pointer)
+    (create-pattern-from-foreign pattern-pointer)))
+
+(define-pattern-function-flexible get-color-stop-rgba (pattern pattern-pointer index)
+  (with-foreign-objects ((offset :double)
+                         (r :double) (g :double) (b :double) (a :double))
+    (cairo_pattern_get_color_stop_rgba pattern-pointer index offset r g b a)
+    (values (mem-ref offset :double)
+            (mem-ref r :double)
+            (mem-ref g :double)
+            (mem-ref b :double)
+            (mem-ref a :double))))
+
+(define-pattern-function-flexible get-color-stop-count (pattern pattern-pointer)
+  (with-foreign-object (count :int)
+    (cairo_pattern_get_color_stop_count pattern-pointer count)
+    (mem-ref count :int)))
+
+(defun pattern-get-color-stops (pattern)
+  (loop for i from 0 below (pattern-get-color-stop-count pattern)
+        collect (list* i (multiple-value-list (pattern-get-color-stop-rgba pattern i)))))
+
+(define-pattern-function-flexible get-linear-points (pattern pattern-pointer)
+  (with-foreign-objects ((x0 :double) (y0 :double)
+                         (x1 :double) (y1 :double))
+    (cairo_pattern_get_linear_points pattern-pointer x0 y0 x1 y1)
+    (values (mem-ref x0 :double)
+            (mem-ref y0 :double)
+            (mem-ref x1 :double)
+            (mem-ref y1 :double))))
+
+(define-pattern-function-flexible get-radial-circles (pattern pattern-pointer)
+  (with-foreign-objects ((x0 :double) (y0 :double) (r0 :double)
+                         (x1 :double) (y1 :double) (r1 :double))
+    (cairo_pattern_get_radial_circles pattern-pointer x0 y0 r0 x1 y1 r1)
+    (values (mem-ref x0 :double)
+            (mem-ref y0 :double)
+            (mem-ref r0 :double)
+            (mem-ref x1 :double)
+            (mem-ref y1 :double)
+            (mem-ref r1 :double))))
 
 (define-flexible (set-source context-pointer pattern)
   ;set a context's source to pattern

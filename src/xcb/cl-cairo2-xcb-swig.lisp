@@ -41,6 +41,15 @@
   (width :int)
   (height :int))
 
+(cffi:defcfun ("cairo_xcb_surface_set_drawable" cairo_xcb_surface_set_drawable) :void
+  (surface :pointer)
+  (drawable :unsigned-long)
+  (width :int)
+  (height :int))
+
+(cffi:defcfun ("cairo_xcb_device_get_connection" cairo_xcb_device_get_connection) :pointer
+  (device :pointer))
+
 (cffi:defcfun ("cairo_xcb_device_debug_cap_xshm_version" cairo_xcb_device_debug_cap_xshm_version) :void
   (device :pointer)
   (major_version :int)
@@ -51,9 +60,31 @@
   (major_version :int)
   (minor_version :int))
 
+(cffi:defcfun ("cairo_xcb_device_debug_set_precision" cairo_xcb_device_debug_set_precision) :void
+  (device :pointer)
+  (precision :int))
+
+(cffi:defcfun ("cairo_xcb_device_debug_get_precision" cairo_xcb_device_debug_get_precision) :int
+  (device :pointer))
+
 (cffi:defcfun ("cairo_ft_font_face_create_for_ft_face" cairo_ft_font_face_create_for_ft_face) :pointer
   (face :pointer)
   (load_flags :int))
+
+(cffi:defcenum cairo_ft_synthesize_t
+	(:CAIRO_FT_SYNTHESIZE_BOLD #.(cl:ash 1 0))
+	(:CAIRO_FT_SYNTHESIZE_OBLIQUE #.(cl:ash 1 1)))
+
+(cffi:defcfun ("cairo_ft_font_face_set_synthesize" cairo_ft_font_face_set_synthesize) :void
+  (font_face :pointer)
+  (synth_flags :unsigned-int))
+
+(cffi:defcfun ("cairo_ft_font_face_unset_synthesize" cairo_ft_font_face_unset_synthesize) :void
+  (font_face :pointer)
+  (synth_flags :unsigned-int))
+
+(cffi:defcfun ("cairo_ft_font_face_get_synthesize" cairo_ft_font_face_get_synthesize) :unsigned-int
+  (font_face :pointer))
 
 (cffi:defcfun ("cairo_ft_scaled_font_lock_face" cairo_ft_scaled_font_lock_face) :pointer
   (scaled_font :pointer))

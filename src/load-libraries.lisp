@@ -10,43 +10,27 @@
   (cffi-features:darwin	"libcairo.dylib")
   (cffi-features:unix (:or "libcairo.so.2" "libcairo.so"))
   (cffi-features:windows "libcairo-2.dll"))
-	 
+
 (load-foreign-library :libcairo)
 
-(defun deg-to-rad (deg)
-  "Convert degrees to radians."
-  (* deg (/ pi 180.0d0)))
+(defcfun ("cairo_version" %cairo-version) :int)
 
-(defgeneric destroy (object)
-  (:documentation "Destroys Cairo object."))
-(export 'destroy)
+(truncate (%cairo-version) 1)
 
-(defgeneric reference-count (object)
-  (:documentation "Return Cairo's reference count for OBJECT"))
-(export 'reference-count)
+(defun version (&optional (ver (%cairo-version)))
+  (let* ((major (truncate ver 10000))
+         (minor (truncate (- ver (* 10000 major)) 100))
+         (micro (- ver (* 10000 major) (* 100 minor))))
+    (values major minor micro)))
 
-;;;;
-;;;;  commonly used macros/functions
-;;;;
+(defparameter *known-versions*
+  '(11200 11002 10810))
 
-(defun prepend-intern (prefix name &key (replace-dash t) (suffix ""))
-  "Create and intern symbol PREFIXNAME from NAME, optionally
-  replacing dashes in name.  PREFIX is converted to upper case.
-  If given, suffix is appended at the end."
-  (let ((name-as-string (symbol-name name)))
-    (when replace-dash
-      (setf name-as-string (substitute #\_ #\- name-as-string))
-            suffix (substitute #\_ #\- suffix))
-    (intern (concatenate 'string (string-upcase prefix)
-			 name-as-string (string-upcase suffix)))))
-
-(defun copy-double-vector-to-pointer (vector pointer)
-  "Copies vector of double-floats to a memory location."
-  (dotimes (i (length vector))
-    (setf (mem-aref pointer :double i) (coerce (aref vector i) 'double-float))))
-
-(defun copy-pointer-to-double-vector (length pointer)
-  "Copies the contents of a memory location to a vector of a double-floats."
-  (let ((vector (make-array length)))
-    (dotimes (i length vector)
-      (setf (aref vector i) (mem-aref pointer :double i)))))
+(loop with ver = (%cairo-version)
+      for known in *known-versions* do
+        (when (<= known ver)
+          (multiple-value-bind (maj min mic) (version known)
+            (declare (ignore mic))
+            (let ((feature (intern (format nil "CAIRO-~A.~A" maj min)
+                                   :keyword)))
+              (pushnew feature *features*)))))

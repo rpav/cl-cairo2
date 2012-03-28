@@ -143,12 +143,29 @@
 	:CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED
 	:CAIRO_STATUS_DEVICE_TYPE_MISMATCH
 	:CAIRO_STATUS_DEVICE_ERROR
+	:CAIRO_STATUS_INVALID_MESH_CONSTRUCTION
+	:CAIRO_STATUS_DEVICE_FINISHED
 	:CAIRO_STATUS_LAST_STATUS)
 
 (cffi:defcenum cairo_content_t
 	(:CAIRO_CONTENT_COLOR #.#x1000)
 	(:CAIRO_CONTENT_ALPHA #.#x2000)
 	(:CAIRO_CONTENT_COLOR_ALPHA #.#x3000))
+
+(cffi:defcenum cairo_format_t
+	(:CAIRO_FORMAT_INVALID #.-1)
+	(:CAIRO_FORMAT_ARGB32 #.0)
+	(:CAIRO_FORMAT_RGB24 #.1)
+	(:CAIRO_FORMAT_A8 #.2)
+	(:CAIRO_FORMAT_A1 #.3)
+	(:CAIRO_FORMAT_RGB16_565 #.4)
+	(:CAIRO_FORMAT_RGB30 #.5))
+
+(cffi:defcstruct cairo_rectangle_int_t
+	(x :int)
+	(y :int)
+	(width :int)
+	(height :int))
 
 (cffi:defcfun ("cairo_create" cairo_create) :pointer
   (target :pointer))
@@ -257,7 +274,10 @@
 	:CAIRO_ANTIALIAS_DEFAULT
 	:CAIRO_ANTIALIAS_NONE
 	:CAIRO_ANTIALIAS_GRAY
-	:CAIRO_ANTIALIAS_SUBPIXEL)
+	:CAIRO_ANTIALIAS_SUBPIXEL
+	:CAIRO_ANTIALIAS_FAST
+	:CAIRO_ANTIALIAS_GOOD
+	:CAIRO_ANTIALIAS_BEST)
 
 (cffi:defcfun ("cairo_set_antialias" cairo_set_antialias) :void
   (cr :pointer)
@@ -979,7 +999,10 @@
 	:CAIRO_DEVICE_TYPE_SCRIPT
 	:CAIRO_DEVICE_TYPE_XCB
 	:CAIRO_DEVICE_TYPE_XLIB
-	:CAIRO_DEVICE_TYPE_XML)
+	:CAIRO_DEVICE_TYPE_XML
+	:CAIRO_DEVICE_TYPE_COGL
+	:CAIRO_DEVICE_TYPE_WIN32
+	(:CAIRO_DEVICE_TYPE_INVALID #.-1))
 
 (cffi:defcfun ("cairo_device_get_type" cairo_device_get_type) cairo_device_type_t
   (device :pointer))
@@ -1021,12 +1044,100 @@
   (width :int)
   (height :int))
 
+(cffi:defcfun ("cairo_surface_create_similar_image" cairo_surface_create_similar_image) :pointer
+  (other :pointer)
+  (format cairo_format_t)
+  (width :int)
+  (height :int))
+
+(cffi:defcfun ("cairo_surface_map_to_image" cairo_surface_map_to_image) :pointer
+  (surface :pointer)
+  (extents :pointer))
+
+(cffi:defcfun ("cairo_surface_unmap_image" cairo_surface_unmap_image) :void
+  (surface :pointer)
+  (image :pointer))
+
 (cffi:defcfun ("cairo_surface_create_for_rectangle" cairo_surface_create_for_rectangle) :pointer
   (target :pointer)
   (x my-double)
   (y my-double)
   (width my-double)
   (height my-double))
+
+(cffi:defcenum cairo_surface_observer_mode_t
+	(:CAIRO_SURFACE_OBSERVER_NORMAL #.0)
+	(:CAIRO_SURFACE_OBSERVER_RECORD_OPERATIONS #.#x1))
+
+(cffi:defcfun ("cairo_surface_create_observer" cairo_surface_create_observer) :pointer
+  (target :pointer)
+  (mode cairo_surface_observer_mode_t))
+
+(cffi:defcfun ("cairo_surface_observer_add_paint_callback" cairo_surface_observer_add_paint_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_add_mask_callback" cairo_surface_observer_add_mask_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_add_fill_callback" cairo_surface_observer_add_fill_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_add_stroke_callback" cairo_surface_observer_add_stroke_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_add_glyphs_callback" cairo_surface_observer_add_glyphs_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_add_flush_callback" cairo_surface_observer_add_flush_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_add_finish_callback" cairo_surface_observer_add_finish_callback) cairo_status_t
+  (abstract_surface :pointer)
+  (func :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_print" cairo_surface_observer_print) cairo_status_t
+  (surface :pointer)
+  (write_func :pointer)
+  (closure :pointer))
+
+(cffi:defcfun ("cairo_surface_observer_elapsed" cairo_surface_observer_elapsed) :double
+  (surface :pointer))
+
+(cffi:defcfun ("cairo_device_observer_print" cairo_device_observer_print) cairo_status_t
+  (device :pointer)
+  (write_func :pointer)
+  (closure :pointer))
+
+(cffi:defcfun ("cairo_device_observer_elapsed" cairo_device_observer_elapsed) :double
+  (device :pointer))
+
+(cffi:defcfun ("cairo_device_observer_paint_elapsed" cairo_device_observer_paint_elapsed) :double
+  (device :pointer))
+
+(cffi:defcfun ("cairo_device_observer_mask_elapsed" cairo_device_observer_mask_elapsed) :double
+  (device :pointer))
+
+(cffi:defcfun ("cairo_device_observer_fill_elapsed" cairo_device_observer_fill_elapsed) :double
+  (device :pointer))
+
+(cffi:defcfun ("cairo_device_observer_stroke_elapsed" cairo_device_observer_stroke_elapsed) :double
+  (device :pointer))
+
+(cffi:defcfun ("cairo_device_observer_glyphs_elapsed" cairo_device_observer_glyphs_elapsed) :double
+  (device :pointer))
 
 (cffi:defcfun ("cairo_surface_reference" cairo_surface_reference) :pointer
   (surface :pointer))
@@ -1070,7 +1181,8 @@
 	:CAIRO_SURFACE_TYPE_TEE
 	:CAIRO_SURFACE_TYPE_XML
 	:CAIRO_SURFACE_TYPE_SKIA
-	:CAIRO_SURFACE_TYPE_SUBSURFACE)
+	:CAIRO_SURFACE_TYPE_SUBSURFACE
+	:CAIRO_SURFACE_TYPE_COGL)
 
 (cffi:defcfun ("cairo_surface_get_type" cairo_surface_get_type) cairo_surface_type_t
   (surface :pointer))
@@ -1110,6 +1222,10 @@
   (length :unsigned-long)
   (destroy :pointer)
   (closure :pointer))
+
+(cffi:defcfun ("cairo_surface_supports_mime_type" cairo_surface_supports_mime_type) :int
+  (surface :pointer)
+  (mime_type :string))
 
 (cffi:defcfun ("cairo_surface_get_font_options" cairo_surface_get_font_options) :void
   (surface :pointer)
@@ -1156,14 +1272,6 @@
 
 (cffi:defcfun ("cairo_surface_has_show_text_glyphs" cairo_surface_has_show_text_glyphs) :int
   (surface :pointer))
-
-(cffi:defcenum cairo_format_t
-	(:CAIRO_FORMAT_INVALID #.-1)
-	(:CAIRO_FORMAT_ARGB32 #.0)
-	(:CAIRO_FORMAT_RGB24 #.1)
-	(:CAIRO_FORMAT_A8 #.2)
-	(:CAIRO_FORMAT_A1 #.3)
-	(:CAIRO_FORMAT_RGB16_565 #.4))
 
 (cffi:defcfun ("cairo_image_surface_create" cairo_image_surface_create) :pointer
   (format cairo_format_t)
@@ -1214,6 +1322,54 @@
   (width :pointer)
   (height :pointer))
 
+(cffi:defcfun ("cairo_recording_surface_get_extents" cairo_recording_surface_get_extents) :int
+  (surface :pointer)
+  (extents :pointer))
+
+(cffi:defcfun ("cairo_pattern_create_raster_source" cairo_pattern_create_raster_source) :pointer
+  (user_data :pointer)
+  (content cairo_content_t)
+  (width :int)
+  (height :int))
+
+(cffi:defcfun ("cairo_raster_source_pattern_set_callback_data" cairo_raster_source_pattern_set_callback_data) :void
+  (pattern :pointer)
+  (data :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_get_callback_data" cairo_raster_source_pattern_get_callback_data) :pointer
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_set_acquire" cairo_raster_source_pattern_set_acquire) :void
+  (pattern :pointer)
+  (acquire :pointer)
+  (release :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_get_acquire" cairo_raster_source_pattern_get_acquire) :void
+  (pattern :pointer)
+  (acquire :pointer)
+  (release :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_set_snapshot" cairo_raster_source_pattern_set_snapshot) :void
+  (pattern :pointer)
+  (snapshot :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_get_snapshot" cairo_raster_source_pattern_get_snapshot) :pointer
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_set_copy" cairo_raster_source_pattern_set_copy) :void
+  (pattern :pointer)
+  (copy :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_get_copy" cairo_raster_source_pattern_get_copy) :pointer
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_set_finish" cairo_raster_source_pattern_set_finish) :void
+  (pattern :pointer)
+  (finish :pointer))
+
+(cffi:defcfun ("cairo_raster_source_pattern_get_finish" cairo_raster_source_pattern_get_finish) :pointer
+  (pattern :pointer))
+
 (cffi:defcfun ("cairo_pattern_create_rgb" cairo_pattern_create_rgb) :pointer
   (red my-double)
   (green my-double)
@@ -1242,6 +1398,8 @@
   (cy1 my-double)
   (radius1 my-double))
 
+(cffi:defcfun ("cairo_pattern_create_mesh" cairo_pattern_create_mesh) :pointer)
+
 (cffi:defcfun ("cairo_pattern_reference" cairo_pattern_reference) :pointer
   (pattern :pointer))
 
@@ -1268,7 +1426,9 @@
 	:CAIRO_PATTERN_TYPE_SOLID
 	:CAIRO_PATTERN_TYPE_SURFACE
 	:CAIRO_PATTERN_TYPE_LINEAR
-	:CAIRO_PATTERN_TYPE_RADIAL)
+	:CAIRO_PATTERN_TYPE_RADIAL
+	:CAIRO_PATTERN_TYPE_MESH
+	:CAIRO_PATTERN_TYPE_RASTER_SOURCE)
 
 (cffi:defcfun ("cairo_pattern_get_type" cairo_pattern_get_type) cairo_pattern_type_t
   (pattern :pointer))
@@ -1283,6 +1443,52 @@
 (cffi:defcfun ("cairo_pattern_add_color_stop_rgba" cairo_pattern_add_color_stop_rgba) :void
   (pattern :pointer)
   (offset my-double)
+  (red my-double)
+  (green my-double)
+  (blue my-double)
+  (alpha my-double))
+
+(cffi:defcfun ("cairo_mesh_pattern_begin_patch" cairo_mesh_pattern_begin_patch) :void
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_mesh_pattern_end_patch" cairo_mesh_pattern_end_patch) :void
+  (pattern :pointer))
+
+(cffi:defcfun ("cairo_mesh_pattern_curve_to" cairo_mesh_pattern_curve_to) :void
+  (pattern :pointer)
+  (x1 my-double)
+  (y1 my-double)
+  (x2 my-double)
+  (y2 my-double)
+  (x3 my-double)
+  (y3 my-double))
+
+(cffi:defcfun ("cairo_mesh_pattern_line_to" cairo_mesh_pattern_line_to) :void
+  (pattern :pointer)
+  (x my-double)
+  (y my-double))
+
+(cffi:defcfun ("cairo_mesh_pattern_move_to" cairo_mesh_pattern_move_to) :void
+  (pattern :pointer)
+  (x my-double)
+  (y my-double))
+
+(cffi:defcfun ("cairo_mesh_pattern_set_control_point" cairo_mesh_pattern_set_control_point) :void
+  (pattern :pointer)
+  (point_num :unsigned-int)
+  (x my-double)
+  (y my-double))
+
+(cffi:defcfun ("cairo_mesh_pattern_set_corner_color_rgb" cairo_mesh_pattern_set_corner_color_rgb) :void
+  (pattern :pointer)
+  (corner_num :unsigned-int)
+  (red my-double)
+  (green my-double)
+  (blue my-double))
+
+(cffi:defcfun ("cairo_mesh_pattern_set_corner_color_rgba" cairo_mesh_pattern_set_corner_color_rgba) :void
+  (pattern :pointer)
+  (corner_num :unsigned-int)
   (red my-double)
   (green my-double)
   (blue my-double)
@@ -1364,6 +1570,30 @@
   (y1 :pointer)
   (r1 :pointer))
 
+(cffi:defcfun ("cairo_mesh_pattern_get_patch_count" cairo_mesh_pattern_get_patch_count) cairo_status_t
+  (pattern :pointer)
+  (count :pointer))
+
+(cffi:defcfun ("cairo_mesh_pattern_get_path" cairo_mesh_pattern_get_path) :pointer
+  (pattern :pointer)
+  (patch_num :unsigned-int))
+
+(cffi:defcfun ("cairo_mesh_pattern_get_corner_color_rgba" cairo_mesh_pattern_get_corner_color_rgba) cairo_status_t
+  (pattern :pointer)
+  (patch_num :unsigned-int)
+  (corner_num :unsigned-int)
+  (red :pointer)
+  (green :pointer)
+  (blue :pointer)
+  (alpha :pointer))
+
+(cffi:defcfun ("cairo_mesh_pattern_get_control_point" cairo_mesh_pattern_get_control_point) cairo_status_t
+  (pattern :pointer)
+  (patch_num :unsigned-int)
+  (point_num :unsigned-int)
+  (x :pointer)
+  (y :pointer))
+
 (cffi:defcfun ("cairo_matrix_init" cairo_matrix_init) :void
   (matrix :pointer)
   (xx my-double)
@@ -1421,12 +1651,6 @@
   (matrix :pointer)
   (x :pointer)
   (y :pointer))
-
-(cffi:defcstruct cairo_rectangle_int_t
-	(x :int)
-	(y :int)
-	(width :int)
-	(height :int))
 
 (cffi:defcenum cairo_region_overlap_t
 	:CAIRO_REGION_OVERLAP_IN

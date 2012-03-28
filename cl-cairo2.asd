@@ -4,8 +4,8 @@
 (in-package #:cl-cairo2-asd)
 
 (defsystem cl-cairo2
-  :description "Cairo 1.8 bindings"
-  :version "0.5"
+  :description "Cairo bindings"
+  :version "0.6"
   :author "Tamas K Papp, Kei Suzuki"
   :license "BOOST 1.0"
   :serial t
@@ -21,6 +21,7 @@
     :serial t
     :components
     ((:file "load-libraries")
+     (:file "common")
      (:file "my-double")
      (:file "cl-cairo2-swig")))
    (:module

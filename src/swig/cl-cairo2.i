@@ -7,6 +7,7 @@
 %ignore CAIRO_MIME_TYPE_PNG;
 %ignore CAIRO_MIME_TYPE_JP2;
 %ignore CAIRO_MIME_TYPE_URI;
+%ignore CAIRO_MIME_TYPE_UNIQUE_ID;
 
 %typemap(cin) double "my-double";
 

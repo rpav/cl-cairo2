@@ -33,6 +33,21 @@
   (face :pointer)
   (load_flags :int))
 
+(cffi:defcenum cairo_ft_synthesize_t
+	(:CAIRO_FT_SYNTHESIZE_BOLD #.(cl:ash 1 0))
+	(:CAIRO_FT_SYNTHESIZE_OBLIQUE #.(cl:ash 1 1)))
+
+(cffi:defcfun ("cairo_ft_font_face_set_synthesize" cairo_ft_font_face_set_synthesize) :void
+  (font_face :pointer)
+  (synth_flags :unsigned-int))
+
+(cffi:defcfun ("cairo_ft_font_face_unset_synthesize" cairo_ft_font_face_unset_synthesize) :void
+  (font_face :pointer)
+  (synth_flags :unsigned-int))
+
+(cffi:defcfun ("cairo_ft_font_face_get_synthesize" cairo_ft_font_face_get_synthesize) :unsigned-int
+  (font_face :pointer))
+
 (cffi:defcfun ("cairo_ft_scaled_font_lock_face" cairo_ft_scaled_font_lock_face) :pointer
   (scaled_font :pointer))
 

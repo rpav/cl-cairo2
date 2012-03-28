@@ -7,7 +7,7 @@
 
    ;; cairo
 
-   destroy deg-to-rad
+   destroy deg-to-rad version
 
    ;; surface
 
@@ -48,6 +48,18 @@
    pattern-get-extend pattern-set-filet pattern-get-filter set-source
    mask create-color-pattern with-linear-pattern with-radial-pattern
    with-patterns
+
+   create-mesh-pattern pattern-mesh-begin-patch pattern-mesh-end-patch
+   pattern-mesh-move-to pattern-mesh-line-to pattern-mesh-curve-to
+   pattern-mesh-set-control-point
+   pattern-mesh-set-corner-color-rgb pattern-mesh-set-corner-color-rgba
+   pattern-mesh-get-patch-count pattern-mesh-get-control-point
+   pattern-mesh-get-corner-rgba
+
+   pattern-get-rgba pattern-get-surface get-source
+   pattern-get-color-stop-rgba pattern-get-color-stop-count
+   pattern-get-color-stops pattern-get-linear-points
+   pattern-get-radial-circles
 
    ;; path
 
