@@ -39,7 +39,10 @@
      (:file "font")
      (:file "user-font")))
    #+freetype2
-   (:mode "freetype"
+   (:module "freetype"
+    :pathname #P"src/"
+    :serial t
+    :components
     ((:file "freetype")))
    (:module
     "xlib"

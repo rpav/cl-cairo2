@@ -8,6 +8,9 @@
   :version "0.1"
   :author "Ryan Pavlik"
   :license "BOOST 1.0"
+
+  :depends-on (:cl-freetype2 :cl-cairo2 :cl-xcb-xlib)
+  
   :serial t
   :components
   ((:module "xcb"
@@ -15,5 +18,4 @@
     :serial t
     :components
     ((:file "cl-cairo2-xcb-swig")
-     (:file "xcb"))))
-  :depends-on (:cl-cairo2 :cl-xcb-xlib))
+     (:file "xcb")))))

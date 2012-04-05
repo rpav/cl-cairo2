@@ -32,7 +32,7 @@
     "/usr/share/fonts/freefont-ttf/FreeSerif.ttf"
     "/usr/share/fonts/TTF/luxirr.ttf"))
 
-(defvar *example-text* "Hello cl-cairo2 + freetype")
+(defparameter *example-text* "Hello cl-cairo2 + freetype")
 
 (defun find-default-face ()
   "Try to find a path to a usable font"

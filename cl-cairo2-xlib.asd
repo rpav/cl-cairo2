@@ -8,6 +8,9 @@
   :version "0.1"
   :author "Tamas K Papp"
   :license "BOOST 1.0"
+  
+  :depends-on (:cl-freetype2 :cl-cairo2)
+  
   :serial t
   :components
   ((:module
@@ -24,5 +27,4 @@
     :serial t
     :components
     ((:file "xlib-image-context")
-     (:file "gtk-context"))))
-  :depends-on (:cl-cairo2))
+     (:file "gtk-context")))))

@@ -154,9 +154,15 @@ pointer."
 
 (declaim (inline set-glyph))
 (defun set-glyph (glyph-ptr index x y)
-  (setf (foreign-slot-value glyph-ptr 'cairo_glyph_t 'index) index)
-  (setf (foreign-slot-value glyph-ptr 'cairo_glyph_t 'x) x)
-  (setf (foreign-slot-value glyph-ptr 'cairo_glyph_t 'y) y))
+  (setf (mem-ref glyph-ptr :unsigned-long) index)
+  (setf (mem-ref (inc-pointer glyph-ptr
+                              #.(foreign-slot-offset 'cairo_glyph_t 'x))
+                 :double)
+        (coerce x 'double-float))
+  (setf (mem-ref (inc-pointer glyph-ptr
+                              #.(foreign-slot-offset 'cairo_glyph_t 'y))
+                 :double)
+        (coerce y 'double-float)))
 
 (defun make-glyph-array (count)
   (let* ((ptr (cffi:foreign-alloc 'cairo_glyph_t :count count))
@@ -169,8 +175,8 @@ pointer."
             (glyph-array-count glyph-array))
     (error "Glyph array too small (length ~A)" (glyph-array-count glyph-array)))
   (let* ((next (glyph-array-filled glyph-array))
-         (glyph (cffi:mem-aref (glyph-array-pointer glyph-array)
-                              'cairo_glyph_t next)))
+         (glyph (inc-pointer (glyph-array-pointer glyph-array)
+                             (* next #.(cffi:foreign-type-size 'cairo_glyph_t)))))
     (set-glyph glyph index x y)
     (incf (glyph-array-filled glyph-array))
     (values)))

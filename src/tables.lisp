@@ -12,13 +12,18 @@
   '((:CAIRO_FORMAT_ARGB32 . :argb32)
     (:CAIRO_FORMAT_RGB24 . :rgb24)
     (:CAIRO_FORMAT_A8 . :a8)
-    (:CAIRO_FORMAT_A1 . :a1)))
+    (:CAIRO_FORMAT_A1 . :a1)
+    (:CAIRO_FORMAT_RGB16_565 . :rgb16_565)
+    (:CAIRO_FORMAT_RGB30 . :rgb30)))
 
 (exporting-table table-antialias
   '((:CAIRO_ANTIALIAS_DEFAULT . :default)
     (:CAIRO_ANTIALIAS_NONE . :none)
     (:CAIRO_ANTIALIAS_GRAY . :gray)
-    (:CAIRO_ANTIALIAS_SUBPIXEL . :subpixel)))
+    (:CAIRO_ANTIALIAS_SUBPIXEL . :subpixel)
+    (:CAIRO_ANTIALIAS_FAST . :fast)
+    (:CAIRO_ANTIALIAS_GOOD . :good)
+    (:CAIRO_ANTIALIAS_BEST . :best)))
 
 (exporting-table table-fill-rule
   '((:CAIRO_FILL_RULE_WINDING . :winding)
@@ -130,6 +135,9 @@
     (:CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED . :user-font-not-implemented)
     (:CAIRO_STATUS_DEVICE_TYPE_MISMATCH . :device-type-mismatch)
     (:CAIRO_STATUS_DEVICE_ERROR . :device-error)
+    (:CAIRO_STATUS_INVALID_MESH_CONSTRUCTION . :invalid-mesh-construction)
+    (:CAIRO_STATUS_DEVICE_FINISHED . :device-finished)
+    
     (:CAIRO_STATUS_LAST_STATUS . :last-status)))
 
 (exporting-table table-pattern-type
