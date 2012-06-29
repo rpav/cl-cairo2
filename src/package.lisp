@@ -13,8 +13,8 @@
 
    surface pointer width height pixel-based-p destroy
    create-ps-surface create-pdf-surface create-svg-surface
-   create-image-surface create-image-surface-for-data
-   create-image-surface-for-array
+   create-image-surface create-similar-image
+   create-image-surface-for-data create-image-surface-for-array
    image-surface-get-format image-surface-get-width
    image-surface-get-height image-surface-get-data
    image-surface-get-stride image-surface-create-from-png
@@ -22,7 +22,7 @@
    image-surface-create-from-png-stream
    surface-write-to-png with-png-surface
    create-surface-from-foreign
-   surface-flush surface-finish
+   surface-flush surface-finish surface-mark-dirty
 
    ;; context
 
@@ -78,7 +78,8 @@
    font-max-x-advance font-max-y-advance
    get-font-extents
 
-   glyph-array make-glyph-array glyph-array-add glyph-array-set-glyph
+   glyph-array glyph-array-count glyph-array-filled
+   make-glyph-array glyph-array-add glyph-array-set-glyph
    glyph-array-reset-fill
 
    set-font-matrix get-font-matrix set-font-options get-font-options
@@ -92,7 +93,8 @@
    create-font set-font
 
    create-scaled-font scaled-font-extents scaled-font-text-extents
-   scaled-font-glyph-extents scaled-font-get-type
+   scaled-font-glyph-extents scaled-font-get-type scaled-font-get-ctm
+   scaled-font-get-font-matrix scaled-font-get-scale-matrix
    scaled-font-face
 
    create-font-options font-options-copy font-options-merge font-options-hash

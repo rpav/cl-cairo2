@@ -111,6 +111,21 @@
 ;; *_get_ctm
 ;; *_get_scale_matrix
 
+(defun scaled-font-get-ctm (scaled-font)
+  (with-alive-object (scaled-font font-ptr)
+    (with-trans-matrix-out m-ptr
+      (cairo_scaled_font_get_ctm font-ptr m-ptr))))
+
+(defun scaled-font-get-font-matrix (scaled-font)
+  (with-alive-object (scaled-font font-ptr)
+    (with-trans-matrix-out m-ptr
+      (cairo_scaled_font_get_font_matrix font-ptr m-ptr))))
+
+(defun scaled-font-get-scale-matrix (scaled-font)
+  (with-alive-object (scaled-font font-ptr)
+    (with-trans-matrix-out m-ptr
+      (cairo_scaled_font_get_scale_matrix font-ptr m-ptr))))
+
 (defun scaled-font-get-type (scaled-font)
   (with-alive-object (scaled-font font-pointer)
     (cairo_scaled_font_get_type font-pointer)))

@@ -140,6 +140,10 @@ and needs to be referenced before use."
   (with-checked-status surface
     (cairo_surface_finish (get-pointer surface))))
 
+(defun surface-mark-dirty (surface)
+  (with-checked-status surface
+    (cairo_surface_mark_dirty (get-pointer surface))))
+
 ;;;;
 ;;;; Macros to create surfaces (that are written into files) and
 ;;;; direct creation of contexts for these surfaces.
@@ -182,6 +186,15 @@ and needs to be referenced before use."
    (cairo_image_surface_create (lookup-enum format table-format)
 			       width height)
    width height t))
+
+(defun create-similar-image (other-surface format width height)
+  "Create a new image surface suitable for fast blitting to OTHER-SURFACE
+via cairo_surface_create_similar_image."
+  (with-cairo-object (other-surface ptr)
+   (new-surface-with-check
+    (cairo_surface_create_similar_image ptr (lookup-enum format table-format)
+                                        width height)
+    width height t)))
 
 (defun create-image-surface-for-data (data format width height stride)
   (new-surface-with-check

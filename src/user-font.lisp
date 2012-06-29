@@ -32,7 +32,9 @@ a pointer when rendering.  Not threadsafe, but neither is cairo.")
   (let* ((font-ptr (cairo_scaled_font_get_font_face scaled-font))
          (user-font (gethash (pointer-address font-ptr)
                              *user-font-ptr-to-object*))
-         (font-extents (make-font-extents-t)))
+         (font-extents (make-font-extents-t
+                        :ascent 1.0 :descent 0.0 :height 1.0
+                        :max-x-advance 1.0 :max-y-advance 0.0)))
     (declare (dynamic-extent font-extents))
     (when (slot-boundp user-font 'init-fun)
       (setf (slot-value *user-font-temp-context* 'pointer) ctx
