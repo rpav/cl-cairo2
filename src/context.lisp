@@ -241,18 +241,28 @@ will be nil, as cairo can't provide that in general."
 ;;;; set colors using the cl-colors library
 ;;;;
 
+(defmacro with-rgb ((red green blue &optional alpha) color &body body)
+  "An attempt at compatibility with earlier cl-colors"
+  (once-only (color)
+    `(let ((,red (red ,color))
+           (,green (green ,color))
+           (,blue (blue ,color))
+           ,@(when alpha
+               `((,alpha (alpha ,color)))))
+       ,@body)))
+
 (defgeneric set-source-color (color &optional context))
 
 (defmethod set-source-color ((color rgb) &optional (context *context*))
-  (with-slots (red green blue) color
+  (with-rgb (red green blue) color
     (set-source-rgb red green blue context)))
 
 (defmethod set-source-color ((color rgba) &optional (context *context*))
-  (with-slots (red green blue alpha) color
+  (with-rgb (red green blue alpha) color
     (set-source-rgba red green blue alpha context)))
 
 (defmethod set-source-color ((color hsv) &optional (context *context*))
-  (with-slots (red green blue) (hsv->rgb color)
+  (with-rgb (red green blue) (hsv->rgb color)
     (set-source-rgb red green blue context)))
 
   
