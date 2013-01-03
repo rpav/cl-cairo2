@@ -29,6 +29,8 @@ a pointer when rendering.  Not threadsafe, but neither is cairo.")
     ((scaled-font :pointer)
      (ctx :pointer)
      (extents :pointer))
+
+  #+sbcl (declaim (optimize (debug 1) (speed 1) (safety 1)))
   (let* ((font-ptr (cairo_scaled_font_get_font_face scaled-font))
          (user-font (gethash (pointer-address font-ptr)
                              *user-font-ptr-to-object*))
@@ -36,13 +38,14 @@ a pointer when rendering.  Not threadsafe, but neither is cairo.")
                         :ascent 1.0 :descent 0.0 :height 1.0
                         :max-x-advance 1.0 :max-y-advance 0.0)))
     (declare (dynamic-extent font-extents))
-    (when (slot-boundp user-font 'init-fun)
+    (when (and user-font (slot-boundp user-font 'init-fun))
       (setf (slot-value *user-font-temp-context* 'pointer) ctx
             (slot-value *user-font-temp-scaled-font* 'pointer) scaled-font
             (slot-value *user-font-temp-scaled-font* 'font-face) user-font)
       (funcall (user-font-init-fun user-font)
                *user-font-temp-scaled-font*
                *user-font-temp-context*
+               nil
                font-extents)
       (font-extents-t-copy-in extents font-extents)))
   :cairo_status_success)
