@@ -37,3 +37,17 @@
   (let ((vector (make-array length)))
     (dotimes (i length vector)
       (setf (aref vector i) (mem-aref pointer :double i)))))
+
+;;;
+;;; RGBA was apparently removed from cl-colors2
+;;;
+
+(declaim (inline red green blue alpha hsv->rgb))
+(defstruct (rgba (:include cl-colors:rgb)
+                 (:constructor rgba (red green blue alpha)))
+  (alpha nil :type (real 0 1) :read-only t))
+
+(defun red (rgb) (rgb-red rgb))
+(defun green (rgb) (rgb-green rgb))
+(defun blue (rgb) (rgb-blue rgb))
+(defun hsv->rgb (hsv) (cl-colors:hsv-to-rgb hsv))

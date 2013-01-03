@@ -239,7 +239,7 @@
 			      (green color)
 			      (blue color)))
 
-(defmethod pattern-add-color-stop ((pattern pattern) (offset number) (color cl-colors:rgba))
+(defmethod pattern-add-color-stop ((pattern pattern) (offset number) (color rgba))
   (pattern-add-color-stop-rgba pattern offset
 			      (red color)
 			      (green color)

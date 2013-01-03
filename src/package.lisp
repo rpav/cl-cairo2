@@ -3,11 +3,13 @@
 (defpackage cl-cairo2
   (:use :common-lisp :cffi :cl-colors :cl-utilities :metabang-bind)
   (:nicknames :cairo)
+  (:shadow #:rgba #:red #:green #:blue #:alpha #:hsv->rgb)
   (:export
 
    ;; cairo
 
    destroy deg-to-rad version
+   rgba red green blue alpha hsv->rgb
 
    ;; surface
 
