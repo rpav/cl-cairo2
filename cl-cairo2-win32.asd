@@ -1,6 +1,6 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 (defpackage #:cl-cairo2-win32-asd
-  (:use :cl :asdf :cl-cairo2))
+  (:use :cl :asdf))
 
 (in-package #:cl-cairo2-win32-asd)
 
