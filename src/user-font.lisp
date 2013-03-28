@@ -45,7 +45,6 @@ a pointer when rendering.  Not threadsafe, but neither is cairo.")
       (funcall (user-font-init-fun user-font)
                *user-font-temp-scaled-font*
                *user-font-temp-context*
-               nil
                font-extents)
       (font-extents-t-copy-in extents font-extents)))
   :cairo_status_success)
