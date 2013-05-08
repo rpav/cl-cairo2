@@ -1,4 +1,5 @@
-(asdf:operate 'asdf:load-op :cl-cairo2-x11)
+(asdf:load-system :cl-cairo2)
+(asdf:load-system :cl-cairo2-xlib)
 
 ;;;; Make a test package
 (defpackage :cairo-xlib-example
@@ -11,8 +12,8 @@
 ;; open display
 (let ((width 400)
       (height 300))
-  (setf *context* 
-	(create-xlib-image-context width height :window-name "diagonal lines"))
+  (setf *context*
+        (create-xlib-image-context width height :window-name "diagonal lines"))
   ;; clear the whole canvas with blue
   (rectangle 0 0 width height)
   (set-source-rgb 0.2 0.2 0.5)
@@ -39,11 +40,11 @@
   (line-to -1 -1)
   (line-to 1 -1)
   (close-path)
-  (set-source-rgba 
-	           (/ (random 100) 100)
+  (set-source-rgba
                    (/ (random 100) 100)
                    (/ (random 100) 100)
-	           alpha)
+                   (/ (random 100) 100)
+                   alpha)
   (fill-path))
 
 (defparameter width 800)
@@ -58,9 +59,9 @@
 ;; draw the rectangles
 (dotimes (i 500)
   (let ((scaling (+ 5d0 (random 40d0))))
-    (reset-trans-matrix)		       ; reset matrix
+    (reset-trans-matrix)                       ; reset matrix
     (translate (random width) (random height)) ; move the origin
-    (scale scaling scaling)		       ; scale
+    (scale scaling scaling)                    ; scale
     (rotate (deg-to-rad (random max-angle)))   ; rotate
     (random-square (+ 0.1 (random 0.4)))))
 ;; need to close window manually
