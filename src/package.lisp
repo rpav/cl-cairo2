@@ -15,6 +15,7 @@
 
    surface pointer width height pixel-based-p destroy
    create-ps-surface create-pdf-surface create-svg-surface
+   create-recording-surface
    create-image-surface create-similar-image
    create-image-surface-for-data create-image-surface-for-array
    image-surface-get-format image-surface-get-width

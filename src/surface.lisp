@@ -177,6 +177,25 @@ and needs to be referenced before use."
 
 (define-create-surface svg)
 
+;;;
+;;; Recording surface
+;;;
+
+(defun set-rect (rect x y w h)
+  (let ((x0 x) (y0 y))
+    (with-foreign-slots ((x y width height) rect (:struct cairo_rectangle_t))
+      (setf x x0)
+      (setf y y0)
+      (setf width w)
+      (setf height h))))
+
+(defun create-recording-surface (content x y width height)
+  (with-foreign-object (rect '(:struct cairo_rectangle_t))
+    (set-rect rect x y width height)
+    (new-surface-with-check
+     (cairo_recording_surface_create (lookup-enum content table-content) rect)
+     width height)))
+
 ;;;;
 ;;;;  image surface
 ;;;;

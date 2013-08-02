@@ -160,6 +160,11 @@
      (:CAIRO_FILTER_BILINEAR . :bilinear)
      (:CAIRO_FILTER_GAUSSIAN . :gaussian)))
 
+(exporting-table table-content
+  '((:cairo_content_color . :color)
+    (:cairo_content_alpha . :alpha)
+    (:cairo_content_color_alpha . :color-alpha)))
+
 (defun lookup-cairo-enum (cairo-enum table)
   (let ((enum (cdr (assoc cairo-enum table))))
     (unless enum
