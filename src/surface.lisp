@@ -156,7 +156,7 @@ and needs to be referenced before use."
      (new-surface-with-check
       (,(prepend-intern "cairo_" type :replace-dash nil
                                       :suffix "_surface_create")
-       (merge-pathnames filename) width height)
+       (namestring (merge-pathnames filename)) width height)
       width height)))
 
 ;;;;
@@ -314,7 +314,7 @@ Otherwise, return the copy of the image data along with the pointer."
 ;;;;
 
 (defun image-surface-create-from-png (filename)
-  (let* ((path (merge-pathnames filename))
+  (let* ((path (namestring (merge-pathnames filename)))
          (surface
            (new-surface-with-check (cairo_image_surface_create_from_png path)
                                    0 0)))
@@ -369,7 +369,7 @@ single argument which is the amount of data that to be retrieved."
 (defun surface-write-to-png (surface filename)
   (with-cairo-object (surface pointer)
 	(let ((status (cairo_surface_write_to_png
-                       pointer (merge-pathnames filename))))
+                       pointer (namestring (merge-pathnames filename)))))
 	  (unless (eq (lookup-cairo-enum status table-status) :success)
 		(warn "function returned with status ~a." status)))))
 
