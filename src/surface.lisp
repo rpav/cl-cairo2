@@ -152,12 +152,12 @@ and needs to be referenced before use."
 (defmacro define-create-surface (type)
   "Define the function create-<type>-surface."
   `(defun ,(prepend-intern "create-" type :replace-dash nil :suffix "-surface")
-      (filename width height)
-    (new-surface-with-check
-     (,(prepend-intern "cairo_" type :replace-dash nil
-		       :suffix "_surface_create")
-       filename width height)
-     width height)))
+       (filename width height)
+     (new-surface-with-check
+      (,(prepend-intern "cairo_" type :replace-dash nil
+                                      :suffix "_surface_create")
+       (merge-pathnames filename) width height)
+      width height)))
 
 ;;;;
 ;;;; PDF surface
@@ -314,9 +314,10 @@ Otherwise, return the copy of the image data along with the pointer."
 ;;;;
 
 (defun image-surface-create-from-png (filename)
-  (let ((surface
-	 (new-surface-with-check (cairo_image_surface_create_from_png filename)
-				 0 0)))
+  (let* ((path (merge-pathnames filename))
+         (surface
+           (new-surface-with-check (cairo_image_surface_create_from_png path)
+                                   0 0)))
     (with-slots (width height) surface
       (setf width (image-surface-get-width surface)
 	    height (image-surface-get-height surface))
@@ -367,7 +368,8 @@ single argument which is the amount of data that to be retrieved."
 
 (defun surface-write-to-png (surface filename)
   (with-cairo-object (surface pointer)
-	(let ((status (cairo_surface_write_to_png pointer filename)))
+	(let ((status (cairo_surface_write_to_png
+                       pointer (merge-pathnames filename))))
 	  (unless (eq (lookup-cairo-enum status table-status) :success)
 		(warn "function returned with status ~a." status)))))
 
