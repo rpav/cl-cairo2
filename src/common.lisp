@@ -50,4 +50,5 @@
 (defun red (rgb) (rgb-red rgb))
 (defun green (rgb) (rgb-green rgb))
 (defun blue (rgb) (rgb-blue rgb))
+(defun alpha (rgba) (rgba-alpha rgba))
 (defun hsv->rgb (hsv) (cl-colors:hsv-to-rgb hsv))
