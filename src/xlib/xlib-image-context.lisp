@@ -49,7 +49,7 @@
         (setf data0 message)
         (check-zero-status (xsendevent display-pointer signal-window 0 0 xev)))
       (xflush display-pointer)
-      ;; (xsync display-pointer 0)
+      ;;(xsync display-pointer 0)
       )))
 
 (defmethod sync ((object xlib-image-context))
@@ -86,10 +86,12 @@ background-color is not nil, the window will be painted with it."
 					     :pixel-based-p t
                                              :background-color background-color))
           initialization-done?)
-      (labels (;; Repaint the xlib context with the image surface
+      (labels ( ;; Repaint the xlib context with the image surface
 	       ;; (previously set as source during initialization.
 	       (refresh ()
-		 (cairo_paint (xlib-context xlib-image-context)))
+                 (with-slots (context dest-surface) xlib-image-context
+                   (cairo_paint (xlib-context xlib-image-context))
+                   (cairo_surface_flush dest-surface)))
 	       ;; The main event loop, started as a separate thread
 	       ;; when initialization is complete.  The main thread is
 	       ;; supposed to communicate with this one via X signals
@@ -99,7 +101,8 @@ background-color is not nil, the window will be painted with it."
                  (call-xinitthreads)
 		 (bind (((:slots display signal-window (this-window window)
                                  wm-delete-window pointer graphics-context
-                                 xlib-context) xlib-image-context)
+                                 xlib-context dest-surface)
+                         xlib-image-context)
                         (screen (xdefaultscreen display))
                         (root (xdefaultrootwindow display))
                         (visual (xdefaultvisual display screen))
@@ -134,17 +137,16 @@ background-color is not nil, the window will be painted with it."
                    (xstorename display this-window window-name)
                    ;; first we create an X11 surface and context on the window
                    (let ((xlib-surface 
-                          (cairo_xlib_surface_create display this-window visual
-                                                     width height)))
+                           (cairo_xlib_surface_create display this-window visual
+                                                      width height)))
                      (setf xlib-context (cairo_create xlib-surface))
-                     (cairo_surface_destroy xlib-surface))
+                     (setf dest-surface xlib-surface))
                    ;; create cairo surface, then context, then set the
                    ;; surface as the source of the xlib-context
                    (let ((surface (cairo_image_surface_create :CAIRO_FORMAT_RGB24
                                                               width height)))
                      (setf pointer (cairo_create surface))
-                     (cairo_set_source_surface xlib-context surface 0 0)
-                     (cairo_surface_destroy surface))
+                     (cairo_set_source_surface xlib-context surface 0 0))
                    ;; map window
                    (xmapwindow display this-window)
                    ;; end of synchronizing
@@ -180,12 +182,13 @@ background-color is not nil, the window will be painted with it."
                                  (refresh))))))))))
 		 ;; close down everything
 		 (with-slots (display pixmap window signal-window pointer
-				      xlib-context)
+                              xlib-context dest-surface)
 		     xlib-image-context
 		   (xsynchronize display 1)
 		   (let ((saved-pointer pointer))
 		     (setf pointer nil) ; invalidate first so it can't be used
 		     (cairo_destroy saved-pointer))
+                   (cairo_surface_destroy dest-surface)
 		   (cairo_destroy xlib-context)
 		   ;; !! free xlib-context, surface
 		   (xdestroywindow display window)

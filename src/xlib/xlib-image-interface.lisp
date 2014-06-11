@@ -7,6 +7,7 @@
 (defclass xlib-image-context (context)
   ((display :initarg :display)
    (background-color :initarg :background-color)
+   dest-surface
    window graphics-context signal-window
    (xlib-context :accessor xlib-context)
    wm-delete-window
