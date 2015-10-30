@@ -43,7 +43,7 @@
 
 (defun trans-matrix-copy-in (pointer matrix)
   "Copy matrix to a memory location."
-  (with-foreign-slots ((xx yx xy yy x0 y0) pointer cairo_matrix_t)
+  (with-foreign-slots ((xx yx xy yy x0 y0) pointer (:STRUCT CAIRO_MATRIX_T))
     (setf xx (trans-matrix-xx matrix)
 	  yx (trans-matrix-yx matrix)
 	  xy (trans-matrix-xy matrix)
@@ -53,7 +53,7 @@
 
 (defun trans-matrix-copy-out (pointer matrix)
   "Copy contents of a memory location to a transition matrix."
-  (with-foreign-slots ((xx yx xy yy x0 y0) pointer cairo_matrix_t)
+  (with-foreign-slots ((xx yx xy yy x0 y0) pointer (:STRUCT CAIRO_MATRIX_T))
     (setf (trans-matrix-xx matrix) xx
 	  (trans-matrix-yx matrix) yx
 	  (trans-matrix-xy matrix) xy
@@ -63,7 +63,7 @@
 
 (defmacro with-trans-matrix-in (matrix pointer &body body)
   "Execute body with pointer pointing to a memory location with matrix."
-  `(with-foreign-pointer (,pointer (foreign-type-size 'cairo_matrix_t))
+  `(with-foreign-pointer (,pointer (foreign-type-size '(:STRUCT CAIRO_MATRIX_T)))
      (trans-matrix-copy-in ,pointer ,matrix)
      ,@body))
 
@@ -71,7 +71,7 @@
   "Execute body with pointer pointing to an uninitialized location,
   then copy this to matrix and return the matrix."
   (let ((matrix-name (gensym)))
-    `(with-foreign-pointer (,pointer (foreign-type-size 'cairo_matrix_t))
+    `(with-foreign-pointer (,pointer (foreign-type-size '(:STRUCT CAIRO_MATRIX_T)))
        (let ((,matrix-name (make-trans-matrix)))
 	 ,@body
 	 (trans-matrix-copy-out ,pointer ,matrix-name)
@@ -79,7 +79,7 @@
 
 (defmacro with-trans-matrix-in-out (matrix pointer &body body)
   (let ((matrix-name (gensym)))
-    `(with-foreign-pointer (,pointer (foreign-type-size 'cairo_matrix_t))
+    `(with-foreign-pointer (,pointer (foreign-type-size '(:STRUCT CAIRO_MATRIX_T)))
        (let ((,matrix-name (make-trans-matrix)))
 	 (trans-matrix-copy-in ,pointer ,matrix)
 	 ,@body
