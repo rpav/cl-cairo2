@@ -342,9 +342,9 @@ Otherwise, return the copy of the image data along with the pointer."
 	 (destroy ,context)))))
 
 
-(defmacro with-surface-and-context ((surface &optional surface-name) &body body)
+(defmacro with-surface-and-context ((surface-name surface) &body body)
   (let ((var-name (or surface-name '*surface*)))
-    `(with-surface (,surface ,var-name)
+    `(with-surface (,var-name ,surface)
        (with-context-from-surface (,var-name)
 	 ,@body))))
 
