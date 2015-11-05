@@ -1,4 +1,7 @@
 (in-package :cl-cairo2)
+
+(defvar *surface*)
+
 ;;;;
 ;;;;  Notes
 ;;;;  - functions that write to/read from streams are not implemented
@@ -165,11 +168,22 @@ and needs to be referenced before use."
 
 (define-create-surface pdf)
 
+(defun pdf-surface-set-size (surface width height)
+  "Set the current pdf page size."
+  (with-cairo-object (surface pointer)
+    (cairo_pdf_surface_set_size pointer width height)))
+
+
 ;;;;
 ;;;; PostScript surface
 ;;;;
 
 (define-create-surface ps)
+
+(defun ps-surface-set-size (surface width height)
+  "Set the current ps page size."
+  (with-cairo-object (surface pointer)
+    (cairo_ps_surface_set_size pointer width height)))
 
 ;;;;
 ;;;; SVG surface
@@ -309,6 +323,32 @@ Otherwise, return the copy of the image data along with the pointer."
   (with-cairo-object (surface pointer)
 	(cairo_image_surface_get_stride pointer)))
 
+(defmacro with-surface ((surface-name surface &key (destroy t)) &body body)
+  (let ((var-name (or surface-name '*surface*)))
+    `(let ((,var-name ,surface))
+       (unwind-protect
+	    (progn ,@body)
+       
+	 (progn (when ,destroy
+		  (surface-finish ,var-name)
+		  (destroy ,var-name)))))))
+
+(defmacro with-context-from-surface ((surface) &body body)
+  (let ((context (gensym "context")))
+    `(let ((,context (create-context ,surface)))
+       (unwind-protect
+	    (with-context (,context)
+	      ,@body)	      
+	 (destroy ,context)))))
+
+
+(defmacro with-surface-and-context ((surface &optional surface-name) &body body)
+  (let ((var-name (or surface-name '*surface*)))
+    `(with-surface (,surface ,var-name)
+       (with-context-from-surface (,var-name)
+	 ,@body))))
+
+
 ;;;;
 ;;;;  PNG surfaces
 ;;;;
@@ -372,7 +412,7 @@ single argument which is the amount of data that to be retrieved."
                        pointer (namestring (merge-pathnames filename)))))
 	  (unless (eq (lookup-cairo-enum status table-status) :success)
 		(warn "function returned with status ~a." status)))))
-
+    
 (defmacro with-png-surface ((png-file surface-name) &body body)
   `(let ((,surface-name (image-surface-create-from-png ,png-file)))
 	 (unwind-protect (progn ,@body)
