@@ -323,7 +323,7 @@ Otherwise, return the copy of the image data along with the pointer."
   (with-cairo-object (surface pointer)
 	(cairo_image_surface_get_stride pointer)))
 
-(defmacro with-surface ((surface &optional surface-name &key (destroy t)) &body body)
+(defmacro with-surface ((surface-name surface &key (destroy t)) &body body)
   (let ((var-name (or surface-name '*surface*)))
     `(let ((,var-name ,surface))
        (unwind-protect
