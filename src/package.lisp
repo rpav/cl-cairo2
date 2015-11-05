@@ -12,9 +12,10 @@
    rgba red green blue alpha hsv->rgb
 
    ;; surface
-
+   *surface* 
    surface pointer width height pixel-based-p destroy
    create-ps-surface create-pdf-surface create-svg-surface
+   ps-surface-set-size pdf-surface-set-size
    create-recording-surface
    create-image-surface create-similar-image
    create-image-surface-for-data create-image-surface-for-array
@@ -23,7 +24,8 @@
    image-surface-get-stride image-surface-create-from-png
    image-surface-create-from-png-callback
    image-surface-create-from-png-stream
-   surface-write-to-png with-png-surface
+   with-context-from-surface with-surface-and-context
+   surface-write-to-png with-surface with-png-surface
    create-surface-from-foreign
    surface-flush surface-finish surface-mark-dirty
 
