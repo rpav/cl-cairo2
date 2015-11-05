@@ -23,7 +23,8 @@
    image-surface-get-stride image-surface-create-from-png
    image-surface-create-from-png-callback
    image-surface-create-from-png-stream
-   surface-write-to-png with-png-surface
+   with-context-from-surface with-surface-and-context
+   surface-write-to-png with-surface with-png-surface
    create-surface-from-foreign
    surface-flush surface-finish surface-mark-dirty
 
