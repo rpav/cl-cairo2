@@ -70,7 +70,7 @@
 
    new-path new-sub-path close-path arc arc-negative curve-to line-to
    move-to rectangle rel-move-to rel-curve-to rel-line-to text-path
-   get-current-point
+   has-current-point get-current-point
 
    ;; text
 
