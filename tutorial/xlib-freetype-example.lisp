@@ -100,12 +100,15 @@ SCALED-FONT, and store each into GLYPH-ARRAY."
     ;; do any of this, but that's not particularly realistic.
     (let ((scaled-font (create-scaled-font font font-matrix ctm options)))
       (with-context (context)
+        (set-source-rgb 1 0 0)
+        (paint)
+
         (render-to-glyph-array glyph-array *example-text* scaled-font)
 
         (translate 50 50)
         (set-source-rgb 0 0 0)
         (set-font scaled-font)
         (show-glyphs glyph-array)
-        
+
         ;; This is an cl-cairo2-xlib-specific thing:
         (sync context)))))
