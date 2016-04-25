@@ -13,12 +13,16 @@
   (rel-move-to dx dy)
   (rel-curve-to dx1 dy1 dx2 dy2 dx3 dy3)
   (rel-line-to dx dy)
-  (text-path text))
+  (text-path text))  
 
 (define-flexible (get-current-point pointer)
   (with-foreign-objects ((xp :double) (yp :double))
     (cairo_get_current_point pointer xp yp)
     (values (mem-ref xp :double) (mem-ref yp :double))))
+
+(defun has-current-point (&optional (context *context*))
+  (with-context-pointer (context pointer)
+    (= 1 (cairo_has_current_point pointer))))
 
 ;; !!! not done yet: glyph-path
 
