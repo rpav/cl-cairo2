@@ -29,11 +29,11 @@
 
 (define-flexible (text-extents pointer text)
   (with-foreign-pointer (extents-pointer 
-			 (foreign-type-size 'cairo_text_extents_t))
+			 (foreign-type-size '(:struct cairo_text_extents_t)))
     (cairo_text_extents pointer text extents-pointer)
     (with-foreign-slots ((x_bearing y_bearing width height
 				    x_advance y_advance)
-			 extents-pointer cairo_text_extents_t)
+			 extents-pointer (:struct cairo_text_extents_t))
       (values x_bearing y_bearing width height x_advance y_advance))))
 
 (define-with-default-context-sync show-text text)
